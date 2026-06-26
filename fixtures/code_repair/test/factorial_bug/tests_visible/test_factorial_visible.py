@@ -17,4 +17,6 @@ def test_factorial_rejects_bool_and_non_integer_values():
     with pytest.raises(ValueError):
         factorial(False)
     with pytest.raises(ValueError):
+        factorial(3.5)
+    with pytest.raises(ValueError):
         factorial("3.5")
