@@ -1,5 +1,5 @@
 {
   "id": "data-train-parse-flags",
-  "description": "Repair normalize_flags so it returns a dict of boolean flags. Keys should be stripped and lowercased. Values 'true', 'yes', '1', and True mean True; 'false', 'no', '0', False, missing, blank, or None mean False.",
+  "description": "Repair normalize_flags so it returns a dict of boolean flags. Read the flag key from key or name, strip and lowercase it, and skip blank keys. Values 'true', 'yes', 'on', '1', and True mean True; 'false', 'no', 'off', '0', False, missing, blank, None, or unknown tokens mean False. Later rows override earlier rows for the same normalized key.",
   "entrypoint": "flags.py"
 }

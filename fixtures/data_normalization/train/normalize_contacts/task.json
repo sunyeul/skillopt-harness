@@ -1,5 +1,5 @@
 {
   "id": "data-train-normalize-contacts",
-  "description": "Repair normalize_contacts so it returns contacts sorted by id. Each output contact has id, name, email, and active. Trim names and emails, title-case names, lowercase emails, and default missing active to True.",
+  "description": "Repair normalize_contacts so it returns contacts sorted by id with the exact keys id, name, email, and active. Accept email from email, email_address, or contact.email. Trim names and emails, title-case names, lowercase emails, and use explicit active tokens where 'active', 'enabled', 'yes', 'true', '1', and True are active while 'inactive', 'disabled', 'no', 'false', '0', False, missing, blank, or unknown tokens are inactive. Merge duplicate ids by preferring active records and later nonblank name/email fields.",
   "entrypoint": "contacts.py"
 }
