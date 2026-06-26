@@ -1,0 +1,19 @@
+{
+  "best_score": 0.0,
+  "best_selection_records": null,
+  "best_skill_output": "runs/code-repair-skillopt-20260627/best-skill.md",
+  "candidate_score": 0.6,
+  "candidate_selection_records": "runs/code-repair-skillopt-20260627/loop-01/candidate-selection.jsonl",
+  "contamination_reason": null,
+  "current_skill_output": "runs/code-repair-skillopt-20260627/current-best.md",
+  "decision": "accept_new_best",
+  "leakage_status": "clean",
+  "parent_score": 0.0,
+  "parent_selection_records": "runs/code-repair-skillopt-20260627/loop-01/parent-selection.jsonl",
+  "reject_reason": null,
+  "rollout_isolation": "independent",
+  "steps": [
+    "gate"
+  ],
+  "timestamp": "20260626T170804Z"
+}

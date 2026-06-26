@@ -1,0 +1,19 @@
+{
+  "applied": [
+    {
+      "edit_id": "p1-coherent-contract-slice",
+      "message": "replaced target text",
+      "op": "replace",
+      "status": "applied"
+    },
+    {
+      "edit_id": "p2-parser-validation-same-scanner",
+      "message": "replaced target text",
+      "op": "replace",
+      "status": "applied"
+    }
+  ],
+  "failed_count": 0,
+  "timestamp": "20260626T170804Z",
+  "validation_errors": []
+}

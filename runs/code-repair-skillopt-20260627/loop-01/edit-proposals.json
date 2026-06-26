@@ -1,0 +1,32 @@
+[
+  {
+    "id": "p1-coherent-contract-slice",
+    "op": "replace",
+    "target": "- Make the smallest local code change that satisfies the visible tests.\n- Do not build a full parser, solver, state machine, or general-purpose\n  implementation unless a visible test directly requires it.\n- If `task.json` describes extra edge cases that are not exercised by visible\n  tests, prefer the simpler visible-test behavior over implementing the whole\n  contract.\n- Stop once the visible tests are satisfied. Do not add methods, operations,\n  branches, validation paths, or edge-case handling that are mentioned only in\n  `task.json` and never called or asserted by visible tests.",
+    "content": "- Make the smallest coherent local implementation that satisfies the visible tests and the `task.json` contract for the same exercised behavior family.\n- Use visible tests as the primary acceptance target, then include `task.json` validation, coercion, ordering, and preservation rules when they share the same parser, normalizer, allocator, or traversal needed for visible behavior.\n- Avoid unrelated general-purpose frameworks. When visible tests require parsing, ordering, allocation, or token state, build a compact purpose-specific parser, loop, or state machine for that described behavior family.\n- Stop once the visible tests and this coherent contract slice pass. Do not add unrelated methods, operations, input formats, or edge-case families that are only mentioned in `task.json` and not connected to visible behavior.",
+    "score": 0.95,
+    "rationale": "Train repairs passed when they implemented compact coherent slices of the described behavior instead of only exact visible assertions, and the parent's visible-only bullets were mutually reinforcing.",
+    "evidence": ["train-expression-evaluator", "train-capacity-allocator", "train-dependency-order", "train-normalize-people", "train-parse-duration", "train-quoted-tokens", "train-rolling-window", "train-stable-frequency"],
+    "support": "Eight train tasks; success evidence from all repaired train rollouts.",
+    "behavioral_change": "The repairer will anchor on visible tests but include adjacent task.json rules that belong to the same parser, normalizer, allocation loop, tokenizer, or ordering algorithm.",
+    "novelty_vs_parent": "The parent says to satisfy visible tests, avoid parsers/state machines, prefer simpler visible behavior, and stop before task.json-only validation paths.",
+    "novelty_vs_rejected": "No prior rejected edit memory exists.",
+    "mechanical_target": "Exact five-line bullet block in ## Rules; occurs once.",
+    "leakage_check": "Train-only evidence; no selection or test evidence observed before proposal."
+  },
+  {
+    "id": "p2-parser-validation-same-scanner",
+    "op": "replace",
+    "target": "- For parsers and expression-like tasks, implement only the grammar forms that\n  appear in visible tests.",
+    "content": "- For parsers and expression-like tasks, implement the visible grammar families plus task-described malformed-input checks that fall out of the same scanner or parser.",
+    "score": 0.87,
+    "rationale": "Expression, duration, and quoted-token train tasks all benefited from compact scanners/parsers that also handled malformed or trailing input checks in the same code path.",
+    "evidence": ["train-expression-evaluator", "train-parse-duration", "train-quoted-tokens"],
+    "support": "Three parser-like train tasks with success evidence.",
+    "behavioral_change": "The repairer will add same-parser validation instead of ignoring all task-described malformed cases not directly asserted by visible tests.",
+    "novelty_vs_parent": "The parent restricts parsers to only visible grammar forms.",
+    "novelty_vs_rejected": "No prior rejected edit memory exists.",
+    "mechanical_target": "Exact two-line bullet in ## Rules; occurs once.",
+    "leakage_check": "Train-only evidence; no selection or test evidence observed before proposal."
+  }
+]
