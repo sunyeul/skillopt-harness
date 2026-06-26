@@ -29,3 +29,6 @@ def test_int_inputs_preserve_int_result_at_boundaries():
 def test_nonnumeric_bounds_raise_type_error():
     with pytest.raises(TypeError):
         clamp(5, "low", 10)
+
+    with pytest.raises(TypeError):
+        clamp(5, 0, "high")

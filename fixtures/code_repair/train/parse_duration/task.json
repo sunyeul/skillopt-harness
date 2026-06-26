@@ -1,5 +1,5 @@
 {
   "id": "train-parse-duration",
-  "description": "Repair parse_duration so it converts duration text to seconds. Accept compact or spaced non-negative integer tokens with h/hr/hour, m/min/minute, and s/sec/second units case-insensitively. Reject empty text, duplicate units, negative values, malformed tokens, and unknown units with ValueError.",
+  "description": "Repair parse_duration so it converts duration text to seconds. Accept compact or spaced non-negative integer tokens with h/hr/hour/hours, m/min/minute/minutes, and s/sec/second/seconds units case-insensitively. Reject empty text, duplicate units, negative values, malformed tokens, and unknown units with ValueError.",
   "entrypoint": "duration.py"
 }

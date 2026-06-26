@@ -41,6 +41,9 @@ def test_invalid_records_raise_value_error():
         normalize_people([{"name": "missing id"}])
 
     with pytest.raises(ValueError):
+        normalize_people([{"id": 1}])
+
+    with pytest.raises(ValueError):
         normalize_people([{"id": "abc", "name": "bad id"}])
 
     with pytest.raises(ValueError):
