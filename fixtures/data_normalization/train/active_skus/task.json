@@ -1,5 +1,5 @@
 {
   "id": "data-train-active-skus",
-  "description": "Repair active_skus so it returns unique active item SKUs sorted by normalized sku. Read the sku from sku or product.sku, trim it, skip blanks, and compare status case-insensitively. Active status tokens are 'active', 'enabled', '1', and True; missing or blank status is inactive.",
+  "description": "Repair active_skus so it returns unique active item SKUs sorted by normalized sku. Read the sku from sku or product.sku, trim it, and skip missing, blank, None, or malformed SKU sources. Compare status case-insensitively. Active status tokens are 'active', 'enabled', '1', and True; missing or blank status is inactive.",
   "entrypoint": "inventory.py"
 }

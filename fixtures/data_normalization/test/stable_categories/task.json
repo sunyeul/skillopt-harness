@@ -1,5 +1,5 @@
 {
   "id": "data-test-stable-categories",
-  "description": "Repair unique_categories so it accepts string categories or dict categories from category, label, or name fields. Split pipe- or comma-separated category lists, trim and collapse whitespace, lowercase categories, skip blank or missing categories, collapse duplicates, and preserve first-seen canonical order.",
+  "description": "Repair unique_categories so it accepts string categories or dict categories from category, label, or name fields. Split pipe- or comma-separated category lists, trim and collapse whitespace, lowercase categories, skip blank, missing, None, or non-string category values, collapse duplicates, and preserve first-seen canonical order.",
   "entrypoint": "categories.py"
 }
