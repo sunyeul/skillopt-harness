@@ -1,6 +1,11 @@
 .venv/
 .pytest_cache/
+.ruff_cache/
 __pycache__/
 *.py[cod]
-runs/
 workspaces/
+
+# Keep curated MVP evidence while ignoring ad-hoc experiment output.
+runs/*
+!runs/code-repair-clean-loop/
+!runs/code-repair-clean-loop/**

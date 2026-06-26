@@ -1,0 +1,132 @@
+{
+  "loop_id": "loop-01",
+  "edit_budget": 2,
+  "rubric": "0.30 support + 0.25 specificity + 0.20 novelty_vs_parent + 0.15 novelty_vs_rejected + 0.10 applicability_low_leakage",
+  "proposals": [
+    {
+      "id": "E1-contract-checklist",
+      "op": "add",
+      "target": "- Read `task.json`, `.skillopt-task.json` when present, and the visible tests\n  before editing.",
+      "position": "after",
+      "content": "- Treat the task description as the repair contract. Before editing, make a short private checklist of every stated behavior, boundary, default, ordering rule, and error case, then compare the current implementation against that checklist.",
+      "score": 0.95,
+      "score_breakdown": {
+        "train_support": 1.0,
+        "behavioral_specificity": 0.95,
+        "novelty_vs_parent": 0.9,
+        "novelty_vs_rejected": 1.0,
+        "mechanical_applicability_low_leakage": 0.9
+      },
+      "rationale": "All train repairs depended on task-description obligations beyond the narrow visible examples.",
+      "evidence": [
+        "train-clamp-bug required both low and high bounds though visible coverage only showed high",
+        "train-parse-duration required h/m/s parsing and invalid-token ValueError behavior",
+        "train-stable-frequency required first-seen tie stability not directly visible",
+        "train-normalize-people required defaults, field projection, name cleanup, and sorting"
+      ],
+      "support": "Supported by all five train tasks; support is from successful repairs and latent risk in shallow visible coverage.",
+      "behavioral_change": "The repairer will explicitly enumerate contract behaviors before choosing a fix, reducing visible-test-only patches.",
+      "novelty_vs_parent": "The parent says to read metadata and tests but does not require converting the description into a behavior checklist.",
+      "novelty_vs_rejected": "No prior rejected edit family is used in loop-01.",
+      "mechanical_target": "Unique exact target in `## Rules`; insert immediately after the read-metadata rule.",
+      "leakage_check": "Train-only evidence; no selection or test evidence was read or used.",
+      "selected": true
+    },
+    {
+      "id": "E2-full-contract-small-change",
+      "op": "add",
+      "target": "- Make the smallest code change that satisfies the tests.",
+      "position": "after",
+      "content": "- The smallest acceptable change must satisfy the full task contract, not only the visible assertion. For parsers, normalizers, clamping, ranking, and similar data functions, implement all stated units, defaults, ordering, tie, boundary, and validation behavior.",
+      "score": 0.89,
+      "score_breakdown": {
+        "train_support": 1.0,
+        "behavioral_specificity": 0.9,
+        "novelty_vs_parent": 0.75,
+        "novelty_vs_rejected": 1.0,
+        "mechanical_applicability_low_leakage": 0.9
+      },
+      "rationale": "The parent skill's smallest-change rule can be misread as visible-test sufficiency; train tasks rewarded small but complete contract implementations.",
+      "evidence": [
+        "train-clamp-bug: one-line implementation covered both bounds",
+        "train-parse-duration: compact token loop covered all units and invalid tokens",
+        "train-stable-frequency: count plus first_seen covered ranking and tie stability",
+        "train-normalize-people: compact normalization covered field/default/order requirements"
+      ],
+      "support": "Supported by four train tasks with multi-behavior contracts; support is from successful repairs.",
+      "behavioral_change": "The repairer will keep patches small while checking stated edge behaviors before stopping.",
+      "novelty_vs_parent": "Parent emphasizes smallest code change, but not the distinction between visible assertions and complete contract satisfaction.",
+      "novelty_vs_rejected": "No prior rejected edit family is used in loop-01.",
+      "mechanical_target": "Unique exact target in `## Rules`; insert immediately after the smallest-change rule.",
+      "leakage_check": "Train-only evidence; no selection or test evidence was read or used.",
+      "selected": true
+    },
+    {
+      "id": "E3-standard-library-examples",
+      "op": "add",
+      "target": "- Prefer clear standard-library Python over new dependencies.",
+      "position": "after",
+      "content": "- Prefer direct standard-library data structures such as dictionaries, sets, and sorted keys for small counting, ranking, parsing, and normalization tasks.",
+      "score": 0.65,
+      "score_breakdown": {
+        "train_support": 0.8,
+        "behavioral_specificity": 0.55,
+        "novelty_vs_parent": 0.45,
+        "novelty_vs_rejected": 1.0,
+        "mechanical_applicability_low_leakage": 0.9
+      },
+      "rationale": "Several train repairs used simple dictionaries and sorting, but this mostly restates the existing standard-library rule.",
+      "evidence": [
+        "train-stable-frequency used dictionaries and sorted",
+        "train-parse-duration used a multiplier dictionary",
+        "train-normalize-people used list/dict construction and sorted"
+      ],
+      "support": "Supported by three train tasks; support is weaker because the parent already covers this family.",
+      "behavioral_change": "The repairer might reach for simple built-ins earlier.",
+      "novelty_vs_parent": "Low novelty; parent already prefers standard-library Python.",
+      "novelty_vs_rejected": "No prior rejected edit family is used in loop-01.",
+      "mechanical_target": "Unique exact target in `## Rules`; not selected due lower novelty.",
+      "leakage_check": "Train-only evidence; no selection or test evidence was read or used.",
+      "selected": false
+    }
+  ],
+  "selected_edit_ids": [
+    "E1-contract-checklist",
+    "E2-full-contract-small-change"
+  ],
+  "edits": [
+    {
+      "id": "E1-contract-checklist",
+      "op": "add",
+      "target": "- Read `task.json`, `.skillopt-task.json` when present, and the visible tests\n  before editing.",
+      "content": "- Treat the task description as the repair contract. Before editing, make a short private checklist of every stated behavior, boundary, default, ordering rule, and error case, then compare the current implementation against that checklist.",
+      "position": "after",
+      "score": 0.95,
+      "rationale": "All train repairs depended on task-description obligations beyond the narrow visible examples.",
+      "evidence": [
+        "train-clamp-bug required both low and high bounds though visible coverage only showed high",
+        "train-parse-duration required h/m/s parsing and invalid-token ValueError behavior",
+        "train-stable-frequency required first-seen tie stability not directly visible",
+        "train-normalize-people required defaults, field projection, name cleanup, and sorting"
+      ],
+      "section": "## Rules"
+    },
+    {
+      "id": "E2-full-contract-small-change",
+      "op": "add",
+      "target": "- Make the smallest code change that satisfies the tests.",
+      "content": "- The smallest acceptable change must satisfy the full task contract, not only the visible assertion. For parsers, normalizers, clamping, ranking, and similar data functions, implement all stated units, defaults, ordering, tie, boundary, and validation behavior.",
+      "position": "after",
+      "score": 0.89,
+      "rationale": "The parent skill's smallest-change rule can be misread as visible-test sufficiency; train tasks rewarded small but complete contract implementations.",
+      "evidence": [
+        "train-clamp-bug: one-line implementation covered both bounds",
+        "train-parse-duration: compact token loop covered all units and invalid tokens",
+        "train-stable-frequency: count plus first_seen covered ranking and tie stability",
+        "train-normalize-people: compact normalization covered field/default/order requirements"
+      ],
+      "section": "## Rules"
+    }
+  ],
+  "schema_compatibility_note": "The top-level edits list duplicates selected proposals for skillopt-harness loop-run parsing; selected edit content and ranking are unchanged."
+}

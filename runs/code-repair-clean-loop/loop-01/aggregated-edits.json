@@ -1,0 +1,36 @@
+{
+  "edits": [
+    {
+      "content": "- Treat the task description as the repair contract. Before editing, make a short private checklist of every stated behavior, boundary, default, ordering rule, and error case, then compare the current implementation against that checklist.",
+      "evidence": [
+        "train-clamp-bug required both low and high bounds though visible coverage only showed high",
+        "train-parse-duration required h/m/s parsing and invalid-token ValueError behavior",
+        "train-stable-frequency required first-seen tie stability not directly visible",
+        "train-normalize-people required defaults, field projection, name cleanup, and sorting"
+      ],
+      "id": "E1-contract-checklist",
+      "op": "add",
+      "position": "after",
+      "rationale": "All train repairs depended on task-description obligations beyond the narrow visible examples.",
+      "score": 0.95,
+      "section": "## Rules",
+      "target": "- Read `task.json`, `.skillopt-task.json` when present, and the visible tests\n  before editing."
+    },
+    {
+      "content": "- The smallest acceptable change must satisfy the full task contract, not only the visible assertion. For parsers, normalizers, clamping, ranking, and similar data functions, implement all stated units, defaults, ordering, tie, boundary, and validation behavior.",
+      "evidence": [
+        "train-clamp-bug: one-line implementation covered both bounds",
+        "train-parse-duration: compact token loop covered all units and invalid tokens",
+        "train-stable-frequency: count plus first_seen covered ranking and tie stability",
+        "train-normalize-people: compact normalization covered field/default/order requirements"
+      ],
+      "id": "E2-full-contract-small-change",
+      "op": "add",
+      "position": "after",
+      "rationale": "The parent skill's smallest-change rule can be misread as visible-test sufficiency; train tasks rewarded small but complete contract implementations.",
+      "score": 0.89,
+      "section": "## Rules",
+      "target": "- Make the smallest code change that satisfies the tests."
+    }
+  ]
+}

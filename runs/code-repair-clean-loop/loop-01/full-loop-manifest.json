@@ -1,0 +1,38 @@
+{
+  "aggregated_edits": "runs/code-repair-clean-loop/loop-01/aggregated-edits.json",
+  "best_score": 0.6,
+  "best_skill": "runs/code-repair-clean-loop/best-skill.md",
+  "candidate_score": 1.0,
+  "candidate_skill": "runs/code-repair-clean-loop/loop-01/candidate-skill.md",
+  "contamination_reason": null,
+  "current_best": "runs/code-repair-clean-loop/current-best.md",
+  "decision": "accept_new_best",
+  "edit_budget": 2,
+  "experiment_dir": "runs/code-repair-clean-loop",
+  "gate_decision": "runs/code-repair-clean-loop/loop-01/gate-decision.json",
+  "initial_baseline": "runs/code-repair-clean-loop/initial-baseline.md",
+  "leakage_status": "clean",
+  "loop_dir": "runs/code-repair-clean-loop/loop-01",
+  "loop_id": "loop-01",
+  "parent_score": 0.6,
+  "parent_skill": "runs/code-repair-clean-loop/loop-01/parent-skill.md",
+  "reflected_edits": "runs/code-repair-clean-loop/loop-01/reflected-edits.json",
+  "reject_reason": null,
+  "rollout_isolation": "independent",
+  "rollout_records": [
+    "runs/code-repair-clean-loop/loop-01/rollouts/train-rollouts.jsonl"
+  ],
+  "selected_edits": "runs/code-repair-clean-loop/loop-01/selected-edits.json",
+  "steps": [
+    "baseline",
+    "rollout",
+    "reflect",
+    "aggregate",
+    "select",
+    "update",
+    "gate"
+  ],
+  "timestamp": "20260626T103108Z",
+  "track": "code_repair",
+  "update_report": "runs/code-repair-clean-loop/loop-01/update-report.json"
+}

@@ -1,0 +1,21 @@
+{
+  "aggregated_edits": "runs/code-repair-clean-loop/loop-01/aggregated-edits.json",
+  "candidate_skill": "runs/code-repair-clean-loop/loop-01/candidate-skill.md",
+  "edit_budget": 2,
+  "parent_skill": "runs/code-repair-clean-loop/loop-01/parent-skill.md",
+  "reflected_edits": "runs/code-repair-clean-loop/loop-01/reflected-edits.json",
+  "rollout_records": [
+    "runs/code-repair-clean-loop/loop-01/rollouts/train-rollouts.jsonl"
+  ],
+  "selected_edits": "runs/code-repair-clean-loop/loop-01/selected-edits.json",
+  "steps": [
+    "rollout",
+    "reflect",
+    "aggregate",
+    "select",
+    "update"
+  ],
+  "timestamp": "20260626T103108Z",
+  "track": "code_repair",
+  "update_report": "runs/code-repair-clean-loop/loop-01/update-report.json"
+}
