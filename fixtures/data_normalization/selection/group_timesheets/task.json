@@ -1,5 +1,5 @@
 {
   "id": "data-selection-group-timesheets",
-  "description": "Repair hours_by_employee so it returns total non-rejected hours by employee id. Treat missing hours as 0 and preserve first-seen employee order in the returned dict.",
+  "description": "Repair hours_by_employee so it returns total non-rejected hours by employee id. Accept employee ids from employee_id, employee, or nested employee.id, trimming employee ids before grouping. Ignore rows whose trimmed, lowercased status is rejected or void. Parse hours from numbers and numeric strings; missing or blank hours are 0. Preserve first-seen employee order in the returned dict.",
   "entrypoint": "timesheets.py"
 }

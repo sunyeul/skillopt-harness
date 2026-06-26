@@ -1,5 +1,5 @@
 {
   "id": "data-selection-normalize-accounts",
-  "description": "Repair normalize_accounts so it returns accounts sorted by id. Each output account has id, owner, email, and enabled. Trim owner and email, title-case owner, lowercase email, and default missing enabled to False.",
+  "description": "Repair normalize_accounts so it returns accounts sorted by id with the exact keys id, owner, email, and enabled. Accept owner from owner, name, or nested account.owner. Accept email from email, email_address, or nested contact.email. Trim and title-case owner, trim and lowercase email, and default missing owner/email to ''. Enabled tokens 'enabled', 'active', 'yes', 'true', '1', and True mean True; 'disabled', 'inactive', 'no', 'false', '0', False, missing, blank, None, and unknown tokens mean False. Merge duplicate ids by preferring enabled records and later nonblank owner/email fields.",
   "entrypoint": "accounts.py"
 }

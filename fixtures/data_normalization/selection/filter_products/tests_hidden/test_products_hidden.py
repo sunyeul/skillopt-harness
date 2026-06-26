@@ -1,7 +1,31 @@
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from products import published_skus
 
 
-def test_blank_skus_and_missing_status_are_skipped():
+def test_missing_blank_and_unpublished_products_are_skipped():
     assert published_skus(
-        [{"sku": " "}, {"sku": "sku-1"}, {"sku": "sku-0", "status": "Published"}]
-    ) == ["sku-0"]
+        [
+            {"sku": "x-1"},
+            {"sku": " ", "status": "published"},
+            {"product": {}, "status": "live"},
+            {"product": None, "status": True},
+            {"sku": None, "status": "1"},
+            {"sku": "a-1", "status": "PUBLISHED"},
+        ]
+    ) == ["a-1"]
+
+
+def test_string_one_token_and_duplicate_nested_skus_collapse_before_sorting():
+    assert published_skus(
+        [
+            {"sku": " z-9 ", "status": "1"},
+            {"product": {"sku": "m-3"}, "status": "live"},
+            {"sku": "m-3", "status": "published"},
+            {"sku": "a-1", "status": ""},
+            {"sku": "b-2", "status": False},
+        ]
+    ) == ["m-3", "z-9"]
