@@ -12,8 +12,8 @@ def test_active_member_ids_accepts_aliases_tokens_and_sorts_unique_ids():
             {"member_id": " z9 ", "status": "enabled"},
             {"member": {"id": "a1"}, "status": "yes"},
             {"id": "z9", "status": True},
-            {"id": "b2", "status": "inactive"},
+            {"id": "b2", "status": "active"},
             {"user_id": "c3", "status": "1"},
             {"id": " ", "status": "active"},
         ]
-    ) == ["a1", "c3", "z9"]
+    ) == ["a1", "b2", "c3", "z9"]

@@ -27,6 +27,14 @@ def test_exact_schema_duplicate_resolution_and_malformed_rows():
             },
             {"event_id": "b", "title": " beta revised ", "kind": " ", "public": True},
             {"id": "a", "metadata": {"title": " ", "type": " PANEL "}, "public": "1"},
+            {
+                "metadata": {
+                    "id": "c",
+                    "name": " civic clinic ",
+                    "type": " TRAINING ",
+                    "visibility": "public",
+                }
+            },
             {"id": " ", "title": "skip me", "kind": "talk", "public": True},
             {"title": "missing id", "kind": "talk", "public": "public"},
         ]
@@ -35,8 +43,10 @@ def test_exact_schema_duplicate_resolution_and_malformed_rows():
     assert result == [
         {"id": "a", "title": "Alpha Social", "kind": "panel", "public": True},
         {"id": "b", "title": "Beta Revised", "kind": "demo", "public": True},
+        {"id": "c", "title": "Civic Clinic", "kind": "training", "public": True},
     ]
     assert [list(event) for event in result] == [
+        ["id", "title", "kind", "public"],
         ["id", "title", "kind", "public"],
         ["id", "title", "kind", "public"],
     ]
