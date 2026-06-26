@@ -1,5 +1,5 @@
 {
-  "id": "test-factorial-bug",
-  "description": "Repair factorial so it supports non-negative integers and integer strings; rejects booleans, negatives, and non-integers with ValueError; and uses an iterative implementation to avoid recursion limits for moderate inputs.",
+  "id": "test-range-expression",
+  "description": "Repair expand_ranges so it expands a comma-separated integer range expression. Each segment is either a single integer or an inclusive range. Ranges may be written start-end or start..end, with an optional :step suffix. Whitespace is insignificant. Without an explicit step, ascending ranges use +1 and descending ranges use -1. Explicit steps must be nonzero and move toward the end value. Collapse duplicate output numbers while preserving first-seen order across segments. A segment prefixed with ! is an exclusion: expand it by the same range rules, remove those values from the current output if present, and allow later non-exclusion segments to add them again. Raise ValueError for empty input, empty segments, malformed integers, zero steps, and steps that cannot reach the end.",
   "entrypoint": "factorial.py"
 }

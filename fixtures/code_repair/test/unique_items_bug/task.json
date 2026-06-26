@@ -1,5 +1,5 @@
 {
-  "id": "test-unique-items-bug",
-  "description": "Repair unique_items so it removes duplicates in first-seen order without mutating the input. String values are compared after trimming and lowercasing, blank strings are skipped, and unhashable lists or dicts are compared by structural value while preserving the first-seen output representation.",
+  "id": "test-stable-priority-queue",
+  "description": "Repair StablePriorityQueue so it keeps unique items ordered by priority and insertion history. push(item, priority) inserts a new item or updates an existing item's priority. Lower numeric priority pops first. Ties pop by the item's original first insertion order, not by update time. Items may be unhashable lists or dicts; compare them by structural equality while preserving the first inserted item object for pop() and peek(). peek() returns the next item without removing it, raising IndexError when empty. pop() removes and returns the next item, raising IndexError when empty. remove(item) removes an existing equivalent item and returns True, or returns False when absent. len(queue) must report the number of active items.",
   "entrypoint": "unique.py"
 }

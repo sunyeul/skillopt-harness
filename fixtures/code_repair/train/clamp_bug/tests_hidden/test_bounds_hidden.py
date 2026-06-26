@@ -5,30 +5,23 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-clamp = importlib.import_module("bounds").clamp
+allocate_capacity = importlib.import_module("bounds").allocate_capacity
 
 
-def test_reversed_bounds_numeric_strings_and_invalid_values():
-    assert clamp("5", "10", "0") == 5
-    assert clamp("-2", "10", "0") == 0
-
-    with pytest.raises(TypeError):
-        clamp("five", 0, 10)
-
-
-def test_int_inputs_preserve_int_result_at_boundaries():
-    low_result = clamp(-4, 0, 10)
-    high_result = clamp(12, 0, 10)
-
-    assert low_result == 0
-    assert high_result == 10
-    assert type(low_result) is int
-    assert type(high_result) is int
+def test_tie_breaks_by_input_order_and_stops_at_desired():
+    assert allocate_capacity(
+        [
+            {"id": "x", "min": 0, "desired": 1, "priority": 1},
+            {"id": "y", "min": 0, "desired": 3, "priority": 1},
+        ],
+        3,
+    ) == {"x": 1, "y": 2}
 
 
-def test_nonnumeric_bounds_raise_type_error():
-    with pytest.raises(TypeError):
-        clamp(5, "low", 10)
-
-    with pytest.raises(TypeError):
-        clamp(5, 0, "high")
+def test_rejects_insufficient_capacity_duplicates_and_bad_values():
+    with pytest.raises(ValueError):
+        allocate_capacity([{"id": "a", "min": 2, "desired": 3}], 1)
+    with pytest.raises(ValueError):
+        allocate_capacity([{"id": "a", "min": 0, "desired": 1}, {"id": "a", "min": 0, "desired": 1}], 1)
+    with pytest.raises(ValueError):
+        allocate_capacity([{"id": "a", "min": True, "desired": 1}], 1)

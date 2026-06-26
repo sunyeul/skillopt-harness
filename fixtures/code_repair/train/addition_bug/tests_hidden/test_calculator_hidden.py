@@ -5,30 +5,24 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-add_numbers = importlib.import_module("calculator").add_numbers
+evaluate_expression = importlib.import_module("calculator").evaluate_expression
 
 
-def test_add_numbers_handles_negative_numeric_strings_and_zero():
-    assert add_numbers("-2", 0) == -2
+def test_nested_unary_and_python_floor_division_semantics():
+    assert evaluate_expression("-(a + 5) // 2", {"a": 2}) == -4
 
 
-def test_add_numbers_rejects_booleans():
-    with pytest.raises(TypeError):
-        add_numbers(True, 1)
-
-    with pytest.raises(TypeError):
-        add_numbers(1, False)
-
-
-def test_add_numbers_rejects_nonnumeric_strings():
-    with pytest.raises(TypeError):
-        add_numbers("two", 5)
+def test_rejects_missing_variables_bools_and_bad_syntax():
+    with pytest.raises(ValueError):
+        evaluate_expression("missing + 1", {})
+    with pytest.raises(ValueError):
+        evaluate_expression("flag + 1", {"flag": True})
+    with pytest.raises(ValueError):
+        evaluate_expression("1 + * 2")
 
 
-def test_add_numbers_does_not_mutate_string_inputs():
-    left = "-2"
-    right = "5"
-
-    assert add_numbers(left, right) == 3
-    assert left == "-2"
-    assert right == "5"
+def test_rejects_division_by_zero_and_trailing_tokens():
+    with pytest.raises(ValueError):
+        evaluate_expression("4 // (2 - 2)")
+    with pytest.raises(ValueError):
+        evaluate_expression("1 2")

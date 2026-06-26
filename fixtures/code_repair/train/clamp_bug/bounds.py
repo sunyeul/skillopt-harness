@@ -1,2 +1,2 @@
-def clamp(value, low, high):
-    return value
+def allocate_capacity(requests, capacity):
+    return {row["id"]: row["desired"] for row in requests}

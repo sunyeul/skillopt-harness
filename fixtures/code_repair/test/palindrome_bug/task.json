@@ -1,5 +1,5 @@
 {
-  "id": "test-palindrome-bug",
-  "description": "Repair is_palindrome so it performs a case-insensitive alphanumeric palindrome check; ignores spaces and punctuation; treats an empty normalized string as true; and rejects non-strings with TypeError.",
+  "id": "test-line-patch-applicator",
+  "description": "Repair apply_line_patch so it applies patch operations to a copy of a line list. Operations are processed sequentially against the current list. insert inserts one value or a list of values before index, allowing index equal to len(lines). delete removes count lines starting at index; count defaults to 1 and must be positive. replace removes count lines starting at index and inserts value or values; count defaults to 1. move removes count lines starting at index and reinserts that block before target_index after removal; target_index may equal the post-removal length. copy copies count lines starting at index and inserts that copied block before target_index without removing the original block. Reject unknown operations, negative indexes, out-of-range indexes, nonpositive counts, and deletes/replaces/moves/copies that run past the end with ValueError. Do not mutate the input lines or operations.",
   "entrypoint": "palindrome.py"
 }

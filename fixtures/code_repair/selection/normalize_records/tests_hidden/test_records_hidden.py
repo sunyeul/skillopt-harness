@@ -52,3 +52,22 @@ def test_invalid_records_raise_value_error():
 
 def test_empty_input_returns_empty_list():
     assert normalize_records([]) == []
+
+
+def test_duplicate_records_use_priority_and_updated_at_rules():
+    assert normalize_records(
+        [
+            {"id": 2, "name": "old name", "active": "yes", "source": "import", "updated_at": 10},
+            {"record_id": 2, "full_name": "new name", "active": "no", "source": "manual", "updated_at": 1},
+            {"profile": {"id": "2", "name": "tie name"}, "active": "yes", "source": "manual", "updated_at": 1},
+        ]
+    ) == [{"id": 2, "name": "Old Name", "active": True}]
+
+
+def test_tombstone_winner_omits_duplicate_id():
+    assert normalize_records(
+        [
+            {"id": 3, "name": "keep maybe", "active": "yes", "source": "import", "updated_at": 10},
+            {"id": 3, "name": "delete me", "active": "no", "status": "deleted", "source": "manual", "updated_at": 1},
+        ]
+    ) == []

@@ -1,5 +1,5 @@
 {
-  "id": "train-addition-bug",
-  "description": "Repair add_numbers so it adds numeric inputs after coercing numeric strings. Reject booleans and nonnumeric strings with TypeError. Do not mutate inputs.",
+  "id": "train-expression-evaluator",
+  "description": "Repair evaluate_expression so it evaluates a small arithmetic expression language without using eval or exec. Support integers, variable names made of letters/underscores, whitespace, parentheses, unary +/-, binary +, -, *, and // with normal precedence and left associativity. Variables are read from the optional variables dict and must be ints; missing variables and boolean values raise ValueError. Integer division uses Python // semantics. Raise ValueError for malformed expressions, empty expressions, unsupported characters, division by zero, and trailing tokens.",
   "entrypoint": "calculator.py"
 }

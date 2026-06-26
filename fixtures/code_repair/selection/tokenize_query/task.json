@@ -1,5 +1,5 @@
 {
   "id": "selection-tokenize-query",
-  "description": "Repair parse_query so it parses a URL query string into a dict. Accept an optional leading '?', decode percent escapes and '+', skip blank parts and blank keys, assign keys without '=' an empty string value, and collect repeated keys in first-seen value lists. Use only the Python standard library; do not add external dependencies.",
+  "description": "Repair parse_query so it parses a URL query string into a dict. Accept an optional leading '?', decode percent escapes and '+', skip blank parts and blank keys, assign keys without '=' an empty string value, and collect repeated keys in first-seen value lists. Keys ending in [] append to a list under the key name without the [] suffix; repeated scalar keys also become first-seen value lists. If both scalar and [] forms appear for the same decoded key, preserve all values in first-seen order in one list. Raise ValueError for malformed percent escapes such as '%' not followed by two hexadecimal digits. Use only the Python standard library; do not add external dependencies.",
   "entrypoint": "query.py"
 }

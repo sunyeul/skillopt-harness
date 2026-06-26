@@ -1,5 +1,5 @@
 {
-  "id": "train-clamp-bug",
-  "description": "Repair clamp so it clamps values with numeric coercion. Support reversed bounds by normalizing low and high. Preserve an int result when value, low, and high are all ints. Reject nonnumeric values with TypeError.",
+  "id": "train-capacity-allocator",
+  "description": "Repair allocate_capacity so it allocates integer capacity across request rows. Each row has id, min, desired, and optional priority. Coerce min, desired, priority, and capacity from ints or integer strings; reject booleans, negative min/desired, desired less than min, duplicate ids, malformed rows, and non-integer values with ValueError. First assign every row its min. If capacity is less than total min, raise ValueError. Then distribute remaining units one at a time to rows that are still below desired, choosing higher priority first and breaking ties by original input order; continue cycling through eligible rows until no capacity remains or every desired amount is reached. Return a dict in original id order. Do not mutate inputs.",
   "entrypoint": "bounds.py"
 }

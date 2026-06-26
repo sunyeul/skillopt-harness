@@ -1,5 +1,5 @@
 {
   "id": "selection-merge-intervals",
-  "description": "Repair merge_intervals so it returns a new deterministic sorted list of inclusive intervals. Normalize reversed endpoints before processing, merge intervals that overlap or touch, reject malformed intervals with ValueError, and do not mutate the input.",
+  "description": "Repair merge_intervals so it returns a new deterministic sorted list of inclusive intervals. Each interval is either [start, end] or [start, end, label]. Normalize reversed endpoints before processing. Merge intervals that overlap or touch only when their labels match; unlabeled intervals use the empty label. Return unlabeled merged intervals as [start, end] and labeled merged intervals as [start, end, label]. Sort by start, then end, then label. Reject malformed intervals with ValueError, and do not mutate the input.",
   "entrypoint": "intervals.py"
 }

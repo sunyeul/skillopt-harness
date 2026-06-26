@@ -18,3 +18,18 @@ def test_percent_decoded_keys_and_plus_as_space():
     assert parse_query("?first%20name=Ada+Lovelace&first%20name=Grace%20Hopper") == {
         "first name": ["Ada Lovelace", "Grace Hopper"],
     }
+
+
+def test_bracket_list_keys_merge_with_scalar_repeats_in_order():
+    assert parse_query("?tag[]=alpha&tag=beta&tag[]=gamma&empty[]=&single=value") == {
+        "tag": ["alpha", "beta", "gamma"],
+        "empty": [""],
+        "single": "value",
+    }
+
+
+def test_malformed_percent_escape_raises_value_error():
+    import pytest
+
+    with pytest.raises(ValueError):
+        parse_query("ok=1&bad=%GG")

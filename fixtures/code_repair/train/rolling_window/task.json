@@ -1,0 +1,5 @@
+{
+  "id": "train-rolling-window",
+  "description": "Repair rolling_totals so it returns one summary after each accepted reading. The window argument must be a positive integer or raise ValueError. Accept readings as numbers, numeric strings, or dicts with a value key. Reject booleans, None, missing values, blank strings, and nonnumeric values by skipping them without producing a summary. A dict reading with reset set to True clears the current window before its value is considered; if that reset row has no accepted numeric value, it produces no summary. Each summary must be a dict with count, total, and average for the last window accepted numeric readings since the most recent reset. Totals and averages should be ints when mathematically integral and floats otherwise.",
+  "entrypoint": "window.py"
+}

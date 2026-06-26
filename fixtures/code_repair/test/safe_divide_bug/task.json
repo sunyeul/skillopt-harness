@@ -1,5 +1,5 @@
 {
-  "id": "test-safe-divide-bug",
-  "description": "Repair safe_divide so it coerces numeric strings, returns None for zero denominator or invalid numeric input, preserves the float quotient, and rejects booleans by returning None.",
+  "id": "test-lru-cache",
+  "description": "Repair LRUCache so it stores key/value pairs with least-recently-used eviction. The constructor takes capacity; nonpositive capacity means no values are stored. put(key, value) inserts or updates a key and marks it most recently used. get(key, default=None) returns the value and marks an existing key most recently used, or returns default without storing anything. peek(key, default=None) returns an existing value without changing recency, or returns default when absent. items() returns a list of (key, value) pairs from least recently used to most recently used. Updating an existing key must not increase size, and inserting beyond capacity evicts exactly the least recently used key. Keys may be unhashable lists or dicts; compare them by structural equality while preserving the first inserted key object in items().",
   "entrypoint": "division.py"
 }

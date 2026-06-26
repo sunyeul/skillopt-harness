@@ -1,21 +1,27 @@
 from pathlib import Path
 import sys
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from parity import is_even  # noqa: E402
+from parity import reconcile_status  # noqa: E402
 
 
-def test_even_handles_zero_negative_and_signed_string():
-    assert is_even(0) is True
-    assert is_even(-3) is False
-    assert is_even(" +42 ") is True
+def test_merges_by_source_priority_then_timestamp():
+    assert reconcile_status(
+        [
+            {"id": "b", "status": "open", "timestamp": 10, "source": "api"},
+            {"id": "a", "status": "resolved", "timestamp": 1, "source": "import"},
+            {"id": "b", "status": "hold", "timestamp": 5, "source": "manual"},
+            {"id": "a", "status": "pending", "timestamp": 20, "source": "api"},
+        ]
+    ) == {"a": "pending", "b": "blocked"}
 
 
-def test_even_rejects_bool_and_non_integer_string():
-    with pytest.raises(TypeError):
-        is_even(True)
-    with pytest.raises(TypeError):
-        is_even("4.2")
+def test_skips_blank_ids_and_unknown_statuses():
+    assert reconcile_status(
+        [
+            {"id": "  ", "status": "open"},
+            {"item_id": "x", "status": "unknown", "timestamp": 5},
+            {"item_id": "x", "status": " waiting ", "timestamp": 4},
+        ]
+    ) == {"x": "pending"}

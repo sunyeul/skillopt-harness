@@ -1,5 +1,5 @@
 {
   "id": "selection-top-k-frequent",
-  "description": "Repair top_k_frequent so it returns up to k most frequent canonical values. Normalize string values by trimming whitespace and lowercasing, skip blank strings, preserve the original canonical value type for non-strings, and sort by descending frequency with ties broken by first-seen canonical order. Return an empty list when k is less than or equal to 0. Do not mutate inputs.",
+  "description": "Repair top_k_frequent so it returns up to k most frequent canonical values. Normalize string values by trimming whitespace and lowercasing, skip blank strings, preserve the original canonical value type for non-strings, and sort by descending frequency with ties broken by first-seen canonical order. Dict values with a label key contribute their normalized label; their optional weight key contributes numeric weight instead of count 1, with missing or nonnumeric weights treated as 1. Dict rows with weight less than or equal to 0 are ignored entirely and do not establish first-seen order. Return an empty list when k is less than or equal to 0. Do not mutate inputs.",
   "entrypoint": "frequency.py"
 }

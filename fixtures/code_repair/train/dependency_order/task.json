@@ -1,0 +1,5 @@
+{
+  "id": "train-dependency-order",
+  "description": "Repair resolve_order so it returns a deterministic dependency order. Accept either a mapping of item name to dependency names or a list of dicts with name and deps keys. Required dependencies must appear as items; duplicate item names are invalid; duplicate dependencies for one item are ignored. A dependency string prefixed with '?' is optional: if the named item exists, it behaves like a normal dependency, and if it is missing, it is ignored. Return an order where each present dependency appears before the item that needs it. For list inputs, an item may include numeric priority; when multiple items are ready, choose lower priority first, treating missing priority as 0, then the item whose definition appeared first. For mapping inputs, ready ties use definition order. Raise ValueError for unknown required dependencies, duplicate item names, or dependency cycles. Do not mutate the input.",
+  "entrypoint": "deps.py"
+}

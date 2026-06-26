@@ -1,0 +1,5 @@
+{
+  "id": "train-quoted-tokens",
+  "description": "Repair parse_tokens so it parses a command-like token string. Commas and whitespace separate tokens only when outside quotes. Single and double quotes group text without including the quote characters, and empty quoted tokens are preserved. A backslash escapes the next character both inside and outside quotes, including quotes, commas, whitespace, backslashes, and '#'. A '#' outside quotes starts a comment only when it is not escaped, and the rest of the input is ignored. Blank unquoted tokens are skipped. Raise ValueError for unterminated quotes or a trailing backslash.",
+  "entrypoint": "tokens.py"
+}

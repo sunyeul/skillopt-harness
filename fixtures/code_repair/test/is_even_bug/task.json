@@ -1,5 +1,5 @@
 {
-  "id": "test-is-even-bug",
-  "description": "Repair is_even so it supports ints and integer strings with whitespace/sign; rejects booleans and non-integer strings with TypeError; and handles negative values and zero.",
+  "id": "test-status-reconciliation",
+  "description": "Repair reconcile_status so it merges status events by id. Read ids from id or item_id, trim string ids, and skip blank or missing ids. Normalize status strings by trimming and lowercasing; allowed final statuses are open, pending, closed, and blocked. Aliases done/resolved mean closed, wait/waiting mean pending, and hold means blocked. Statuses deleted, delete, archived, and archive are tombstones: if a tombstone wins for an id, omit that id from the output. Unknown or missing statuses are ignored. Pick the winning event for each id by source priority first (manual > api > import > missing/other), then by numeric timestamp, then by later input order. Return a dict sorted by id whose values are the normalized winning statuses. Do not mutate inputs.",
   "entrypoint": "parity.py"
 }
