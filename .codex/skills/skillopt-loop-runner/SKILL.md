@@ -37,6 +37,9 @@ the target parent skill, and existing lineage artifacts needed to start.
 - Use train evidence only for candidate skill edits.
 - Use selection only for the strict improvement gate.
 - Use test only after final adoption/reporting.
+- Determine baseline/parent improvement on selection only. After adoption, an
+  initial-baseline or parent test score may be measured only as post-hoc
+  reporting, never as a second gate or input to later edits.
 - Keep parent and candidate selection repairs isolated. Prefer separate clean
   subagents or sessions with explicit assigned skill paths.
 - If selection/test details or parent selection failure output leak into
@@ -61,7 +64,9 @@ the target parent skill, and existing lineage artifacts needed to start.
 8. Accept only if `candidate_score > parent_score` and the run is clean.
 9. On accept, update current-best/best-skill lineage. On reject, leave lineage
    unchanged and record the reason.
-10. After final adoption, measure test split for reporting.
+10. After final adoption, measure test split for reporting. If the user asks
+    for baseline comparison, measure the immutable initial baseline or loop
+    parent on test only after adoption and label it reporting-only.
 11. Run `uv run pytest` and `uv run ruff check .` before handoff when the run
     produced tracked artifact or skill changes.
 
@@ -91,5 +96,6 @@ Report:
 - parent and candidate selection scores;
 - accept/reject decision and contamination status;
 - final test score when measured;
+- optional post-hoc baseline/parent test score and test delta when measured;
 - verification results;
 - any dirty pre-existing files intentionally left untouched.

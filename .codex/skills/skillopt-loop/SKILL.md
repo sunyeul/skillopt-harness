@@ -45,6 +45,12 @@ tests, hidden tests, or verifier output is governed by split discipline below.
 - Use train evidence only to propose candidate skill edits.
 - Use selection evidence only to accept or reject a candidate skill.
 - Use test evidence only after final adoption for reporting.
+- Quantitative adoption improvement is determined on selection only. Do not use
+  test scores to accept, reject, tune, or re-rank a candidate.
+- After adoption, measuring the initial baseline or parent on test is allowed
+  only as post-hoc reporting of effect size. Label it clearly as reporting-only,
+  keep it out of all adoption decisions, and do not use it as evidence for
+  later candidate edits.
 - Do not inspect hidden test files directly. Hidden tests are observed only
   through `grade-task` scores and verifier output.
 - Candidate skill text and candidate selection repairs must both stay isolated
@@ -94,6 +100,10 @@ Codex, target models, or optimizer models.
 5. Update: apply selected bounded edits to produce `<loop-dir>/candidate-skill.md`.
 6. Validation Gate: compare parent and candidate selection records; accept only
    if `candidate_score > parent_score` and the run is not contaminated.
+7. Final Report: after adoption, measure the accepted current-best on test.
+   Optionally measure the immutable initial baseline or loop parent on test for
+   post-hoc effect-size reporting only; this must not change the gate decision
+   or feed any later skill edit.
 
 Reject ties, regressions, missing scores, contaminated runs, or runs with
 changed harness/fixture/verifier behavior.
@@ -354,6 +364,7 @@ audit the loop artifacts. Provide:
 | Treating a tie as success | Reject; strict improvement means `candidate_score > parent_score`. |
 | Editing deployable skill before gate | Keep edits in `candidate-skill.md` until accepted. |
 | Reusing selection/test insight in reflection | Mark contaminated and reject. |
+| Using test baseline comparison to justify adoption | Keep adoption based on selection only; test baseline is post-hoc reporting-only. |
 | Repeating a rejected edit family with new wording | Reject before gate unless the proposal has concrete behavioral novelty. |
 | Scoring edits with an implicit or changing rubric | Write `reflect-protocol.md` first and reject proposals not scored by it. |
 | Using descriptive targets like "after the rule ..." instead of exact text | Treat as mechanically invalid; regenerate the candidate before gate. |
@@ -374,6 +385,8 @@ Write or verify a concise decision record with:
 - Train evidence and reflected edit proposal paths.
 - Reflect protocol, rejected-edit memory, and trajectory analysis paths.
 - Parent, candidate, and best selection scores.
+- Accepted current-best test score when measured, plus optional reporting-only
+  baseline/parent test score if measured after adoption.
 - Decision: `accept_new_best`, `accept`, or `reject`.
 - Leakage status: `clean` or `contaminated`.
 - Contamination reason when leakage status is `contaminated`.
