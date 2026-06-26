@@ -18,6 +18,28 @@ Within one experiment, the initial baseline skill is immutable. Accepted
 candidates update `current-best.md`, and `current-best.md` becomes the next
 loop's parent skill.
 
+## Invocation Contract
+
+Each loop run must resolve these inputs before reading task evidence:
+
+- `TRACK`: required. If the user did not provide it, ask. Do not infer it from
+  recent conversation, skill names, fixture paths, or experiment history.
+- `EXPERIMENT_DIR`: required unless the user explicitly asks only for an audit
+  of existing loop artifacts. If missing, ask or choose a clearly labeled
+  throwaway path only when the user asked for exploration, not adoption.
+- `LOOP_ID`: default to the next obvious loop id for the experiment, such as
+  `loop-01`, only after checking existing loop artifact names.
+
+Resolve the target skill, evaluator command, and train/selection/test split
+paths from `skillopt.yaml` using `tracks[TRACK]`. The skill must not assume a
+track such as code repair or data normalization, and must not hardcode target
+skill or fixture paths except as a fallback after reading `skillopt.yaml`.
+
+Reading `skillopt.yaml`, this skill file, the auditor prompt, and existing
+lineage artifacts for the requested experiment is allowed during preflight.
+Listing task ids, task metadata, fixture directories, source files, visible
+tests, hidden tests, or verifier output is governed by split discipline below.
+
 ## Split Discipline
 
 - Use train evidence only to propose candidate skill edits.
@@ -222,15 +244,15 @@ Use the single public loop command:
 
 ```bash
 uv run skillopt-harness loop-run \
-  --track code_repair \
-  --experiment-dir runs/my-experiment \
-  --loop-id loop-01 \
-  --initial-skill .codex/skills/code-repair/SKILL.md \
-  --rollout-records runs/my-experiment/loop-01/train-rollouts.jsonl \
-  --edit-proposals runs/my-experiment/loop-01/edit-proposals.json \
+  --track "$TRACK" \
+  --experiment-dir "$EXPERIMENT_DIR" \
+  --loop-id "$LOOP_ID" \
+  --initial-skill "$TARGET_SKILL" \
+  --rollout-records "$EXPERIMENT_DIR/$LOOP_ID/train-rollouts.jsonl" \
+  --edit-proposals "$EXPERIMENT_DIR/$LOOP_ID/edit-proposals.json" \
   --edit-budget 2 \
-  --parent-selection-records runs/my-experiment/loop-01-inputs/parent-selection.jsonl \
-  --candidate-selection-records runs/my-experiment/loop-01-inputs/candidate-selection.jsonl \
+  --parent-selection-records "$EXPERIMENT_DIR/$LOOP_ID-inputs/parent-selection.jsonl" \
+  --candidate-selection-records "$EXPERIMENT_DIR/$LOOP_ID-inputs/candidate-selection.jsonl" \
   --rollout-isolation independent
 ```
 
@@ -243,10 +265,10 @@ For 2 to 4 epoch runs:
 
 ```bash
 uv run skillopt-harness epoch-run \
-  --track code_repair \
-  --experiment-dir runs/my-experiment \
-  --initial-skill .codex/skills/code-repair/SKILL.md \
-  --epoch-inputs runs/my-experiment/epoch-inputs.json \
+  --track "$TRACK" \
+  --experiment-dir "$EXPERIMENT_DIR" \
+  --initial-skill "$TARGET_SKILL" \
+  --epoch-inputs "$EXPERIMENT_DIR/epoch-inputs.json" \
   --edit-budget 2
 ```
 
@@ -265,9 +287,9 @@ When grading selection workspaces during gate rollout, prefer:
 
 ```bash
 uv run skillopt-harness grade-task \
-  --track code_repair \
-  --workspace workspaces/code_repair/<task-id> \
-  --output runs/my-experiment/loop-01/parent-selection.jsonl \
+  --track "$TRACK" \
+  --workspace "$WORKSPACE" \
+  --output "$EXPERIMENT_DIR/$LOOP_ID/parent-selection.jsonl" \
   --redact-output
 ```
 
