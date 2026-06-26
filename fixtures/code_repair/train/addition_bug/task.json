@@ -1,5 +1,5 @@
 {
   "id": "train-addition-bug",
-  "description": "Repair add_numbers so it returns the sum of both inputs.",
+  "description": "Repair add_numbers so it adds numeric inputs after coercing numeric strings. Reject booleans and nonnumeric strings with TypeError. Do not mutate inputs.",
   "entrypoint": "calculator.py"
 }

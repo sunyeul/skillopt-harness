@@ -1,5 +1,5 @@
 {
   "id": "train-clamp-bug",
-  "description": "Repair clamp so it returns the value bounded by the inclusive low and high limits.",
+  "description": "Repair clamp so it clamps values with numeric coercion. Support reversed bounds by normalizing low and high. Preserve an int result when value, low, and high are all ints. Reject nonnumeric values with TypeError.",
   "entrypoint": "bounds.py"
 }

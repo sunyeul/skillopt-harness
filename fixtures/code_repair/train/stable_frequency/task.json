@@ -1,5 +1,5 @@
 {
   "id": "train-stable-frequency",
-  "description": "Repair rank_labels so it returns the limit most frequent labels. Sort by descending frequency and preserve first-seen order for ties.",
+  "description": "Repair rank_labels so it normalizes labels by trimming and lowercasing, skips blanks, counts canonical labels, and returns up to limit labels sorted by descending frequency then first-seen canonical order. Return an empty list when limit is less than or equal to 0. Do not mutate inputs.",
   "entrypoint": "frequency.py"
 }
