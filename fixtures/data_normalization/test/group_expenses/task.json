@@ -1,5 +1,5 @@
 {
   "id": "data-test-group-expenses",
-  "description": "Repair totals_by_project so it returns total approved expense amount by project id. Ignore rejected expenses, treat missing amount as 0, and preserve first-seen project order in the returned dict.",
+  "description": "Repair totals_by_project so it returns numeric totals by project id. Read project ids from project_id, projectId, project, or nested project.id, trim project ids, and skip blank or missing project ids. Ignore rows whose trimmed and case-normalized status is rejected or void. Parse numeric amounts from numbers or numeric strings; missing or blank amount is 0. Preserve first-seen project order in the returned dict.",
   "entrypoint": "expenses.py"
 }

@@ -1,12 +1,21 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from expenses import totals_by_project
 
 
-def test_totals_by_project():
-    assert totals_by_project(
+def test_totals_by_project_accepts_aliases_amount_strings_and_order():
+    result = totals_by_project(
         [
-            {"project_id": "p2", "amount": 3},
-            {"project_id": "p1", "amount": 8},
-            {"project_id": "p2", "amount": 7},
-            {"project_id": "p1", "amount": 100, "status": "rejected"},
+            {"project": " orbit ", "amount": "12.50", "status": "approved"},
+            {"project_id": "beacon", "amount": "", "status": " approved "},
+            {"project": {"id": "orbit"}, "amount": "7.5", "status": "void"},
+            {"projectId": "beacon", "amount": 3},
+            {"project_id": "comet", "amount": "99", "status": "rejected"},
         ]
-    ) == {"p2": 10, "p1": 8}
+    )
+
+    assert result == {"orbit": 12.5, "beacon": 3}
+    assert list(result) == ["orbit", "beacon"]

@@ -1,5 +1,5 @@
 {
   "id": "data-test-stable-categories",
-  "description": "Repair unique_categories so it returns normalized unique categories in first-seen order. Trim whitespace, lowercase categories, and skip blank categories.",
+  "description": "Repair unique_categories so it accepts string categories or dict categories from category, label, or name fields. Split pipe- or comma-separated category lists, trim and collapse whitespace, lowercase categories, skip blank or missing categories, collapse duplicates, and preserve first-seen canonical order.",
   "entrypoint": "categories.py"
 }

@@ -1,5 +1,5 @@
 {
   "id": "data-test-filter-members",
-  "description": "Repair active_member_ids so it returns active member ids sorted by id. Status comparison is case-insensitive, missing status is inactive, and blank ids are skipped.",
+  "description": "Repair active_member_ids so it accepts member id aliases id, member_id, user_id, and nested member.id. Active status tokens are active, enabled, yes, 1, or True after trimming and case-normalizing strings; all other or missing statuses are inactive. Trim ids, skip blank or missing ids, collapse duplicate canonical ids, and return the ids sorted.",
   "entrypoint": "members.py"
 }
