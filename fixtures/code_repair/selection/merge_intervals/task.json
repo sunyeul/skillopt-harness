@@ -1,5 +1,5 @@
 {
   "id": "selection-merge-intervals",
-  "description": "Repair merge_intervals so it merges unsorted inclusive intervals. Intervals that touch, such as [1, 2] and [2, 4], should be merged.",
+  "description": "Repair merge_intervals so it returns a new deterministic sorted list of inclusive intervals. Normalize reversed endpoints before processing, merge intervals that overlap or touch, reject malformed intervals with ValueError, and do not mutate the input.",
   "entrypoint": "intervals.py"
 }

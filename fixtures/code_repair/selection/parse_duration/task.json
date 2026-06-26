@@ -1,5 +1,5 @@
 {
   "id": "selection-parse-duration",
-  "description": "Repair parse_duration so it converts tokens like '1h 30m', '2m 5s', and '45s' to total seconds. Units are h, m, and s. Invalid tokens should raise ValueError.",
+  "description": "Repair parse_duration so it converts duration text to seconds. Accept compact or spaced non-negative integer tokens with h/hr/hour/hours, m/min/minute/minutes, and s/sec/second/seconds units case-insensitively. Tokens may be separated by whitespace or commas and may end with terminal punctuation '.', '!', or '?'. Reject empty text, duplicate units, negative values, malformed tokens, and unknown units with ValueError.",
   "entrypoint": "duration.py"
 }

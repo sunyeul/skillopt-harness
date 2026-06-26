@@ -1,5 +1,5 @@
 {
   "id": "selection-top-k-frequent",
-  "description": "Repair top_k_frequent so it returns the k most frequent values. Sort by descending frequency and preserve first-seen order for ties.",
+  "description": "Repair top_k_frequent so it returns up to k most frequent canonical values. Normalize string values by trimming whitespace and lowercasing, skip blank strings, preserve the original canonical value type for non-strings, and sort by descending frequency with ties broken by first-seen canonical order. Return an empty list when k is less than or equal to 0. Do not mutate inputs.",
   "entrypoint": "frequency.py"
 }

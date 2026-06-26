@@ -1,5 +1,5 @@
 {
   "id": "selection-normalize-records",
-  "description": "Repair normalize_records so it returns records sorted by id. Each output record has id, name, and active. Trim names, title-case names, and default missing active to False.",
+  "description": "Repair normalize_records so it returns a new list sorted by numeric id. Each output record must have exactly id, name, and active. Read ids from id, record_id, or profile.id, coercing numeric id strings to ints. Read names from name, full_name, or profile.name, trimming whitespace and title-casing. Convert active booleans and string tokens after trimming and lowercasing/case-insensitive matching: yes/y/true/1/active to True, and no/n/false/0/inactive to False; missing active defaults to False. When duplicate ids appear, keep the last normalized record. Reject records missing id or name, nonnumeric ids, or unknown active tokens with ValueError. Do not mutate inputs.",
   "entrypoint": "records.py"
 }
