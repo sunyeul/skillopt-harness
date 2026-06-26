@@ -7,7 +7,7 @@ from orders import totals_by_customer
 
 
 def test_totals_accept_customer_aliases_numeric_strings_and_preserve_order():
-    assert totals_by_customer(
+    result = totals_by_customer(
         [
             {"customer": {"id": " c2 "}, "amount": "4.5"},
             {"customer_id": "c1", "amount": 10},
@@ -16,4 +16,6 @@ def test_totals_accept_customer_aliases_numeric_strings_and_preserve_order():
             {"customer": {"id": "c3"}, "amount": "", "status": "paid"},
             {"customer_id": "c3", "amount": 2, "status": "VOID"},
         ]
-    ) == {"c2": 10.5, "c1": 10, "c3": 0}
+    )
+
+    assert list(result.items()) == [("c2", 10.5), ("c1", 10), ("c3", 0)]

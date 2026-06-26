@@ -7,7 +7,7 @@ from orders import totals_by_customer
 
 
 def test_missing_blank_amounts_and_malformed_customers_are_handled():
-    assert totals_by_customer(
+    result = totals_by_customer(
         [
             {"customer_id": " c1 "},
             {"customer": {"id": "c1"}, "amount": " 2 "},
@@ -16,11 +16,13 @@ def test_missing_blank_amounts_and_malformed_customers_are_handled():
             {"amount": 100},
             {"customer": "c2", "amount": None},
         ]
-    ) == {"c1": 2, "c2": 0}
+    )
+
+    assert list(result.items()) == [("c1", 2), ("c2", 0)]
 
 
 def test_cancelled_and_void_orders_do_not_create_or_update_customers():
-    assert totals_by_customer(
+    result = totals_by_customer(
         [
             {"customer_id": "c1", "amount": "1.25"},
             {"customer_id": "c2", "amount": 50, "status": "cancelled"},
@@ -28,4 +30,6 @@ def test_cancelled_and_void_orders_do_not_create_or_update_customers():
             {"customer": "c1", "amount": 2.75, "status": "complete"},
             {"customer_id": "c2", "amount": 5},
         ]
-    ) == {"c1": 4.0, "c2": 5}
+    )
+
+    assert list(result.items()) == [("c1", 4.0), ("c2", 5)]
