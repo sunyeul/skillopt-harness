@@ -29,3 +29,15 @@ def test_string_one_token_and_duplicate_nested_skus_collapse_before_sorting():
             {"sku": "b-2", "status": False},
         ]
     ) == ["m-3", "z-9"]
+
+
+def test_duplicate_skus_use_source_priority_before_status():
+    assert active_skus(
+        [
+            {"sku": "a-1", "status": "active", "source": "feed", "updated_at": 10},
+            {"sku": "A-1", "status": "inactive", "source": "catalog", "updated_at": 1},
+            {"product": {"sku": "b-2"}, "status": "inactive", "source": "manual", "updated_at": 2},
+            {"sku": "b-2", "status": "enabled", "source": "manual", "updated_at": 3},
+            {"sku": "c-3", "status": True},
+        ]
+    ) == ["b-2", "c-3"]

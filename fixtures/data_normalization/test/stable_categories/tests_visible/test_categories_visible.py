@@ -3,15 +3,35 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from categories import unique_categories
+from categories import category_paths
 
 
-def test_unique_categories_splits_lists_and_keeps_first_seen_order():
-    assert unique_categories(
+def test_builds_preorder_paths_with_aliases_and_sibling_order():
+    assert category_paths(
         [
-            " Support | Sales ",
-            {"category": "support"},
-            {"label": " Finance, sales "},
-            "",
+            "Products > Hardware > Laptops",
+            {"path": "Products/Software", "aliases": {"Products": "Catalog"}},
+            " catalog > hardware > Monitors ",
         ]
-    ) == ["support", "sales", "finance"]
+    ) == [
+        "products",
+        "products > hardware",
+        "products > hardware > laptops",
+        "catalog",
+        "catalog > software",
+        "catalog > hardware",
+        "catalog > hardware > monitors",
+    ]
+
+
+def test_tombstones_block_descendants_until_revived():
+    assert category_paths(
+        [
+            "Ops > Runbooks",
+            "Ops > Runbooks > Deploy",
+            {"path": "Ops > Runbooks", "deleted": True},
+            "Ops > Runbooks > Ignored",
+            {"path": "Ops > Runbooks", "revive": True},
+            "Ops > Runbooks > Restore",
+        ]
+    ) == ["ops", "ops > runbooks", "ops > runbooks > restore"]

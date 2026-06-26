@@ -1,5 +1,5 @@
 {
-  "id": "data-test-parse-preferences",
-  "description": "Repair preference_flags so it returns normalized preference booleans. Read preference names from name, preference, key, or setting aliases; trim and lowercase names, and skip blank or missing names. Values 'on', 'enabled', 'yes', '1', 1, and True mean True; all other values, missing values, blank strings, and None mean False. Later rows override earlier rows for the same normalized preference name.",
+  "id": "data-test-preference-layers",
+  "description": "Repair preference_flags so it resolves layered preference rows into normalized booleans. Read preference names from name, preference, key, or setting aliases; trim and lowercase names, and skip blank or missing names. Values 'on', 'enabled', 'yes', '1', 1, and True mean True; all other values, missing values, blank strings, and None mean False. Rows may include scope global, group, or user; scope priority is user > group > global > missing. Within the same scope, choose by greatest numeric updated_at timestamp, then later input order. A row with locked True prevents lower-priority scopes from changing that preference, but can be overridden by a later row in the same scope or any higher-priority scope. Return preferences in first-seen normalized name order.",
   "entrypoint": "preferences.py"
 }

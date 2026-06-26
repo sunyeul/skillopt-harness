@@ -16,5 +16,5 @@ def test_normalizes_aliases_merges_duplicate_ids_and_sorts():
         ]
     ) == [
         {"id": 1, "name": "Ada Byron", "email": "ada@example.com", "active": True},
-        {"id": 2, "name": "Grace Hopper", "email": "hopper@example.com", "active": True},
+        {"id": 2, "name": "Grace Hopper", "email": "hopper@example.com", "active": False},
     ]

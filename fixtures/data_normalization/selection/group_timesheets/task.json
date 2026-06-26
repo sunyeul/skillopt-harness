@@ -1,5 +1,5 @@
 {
   "id": "data-selection-group-timesheets",
-  "description": "Repair hours_by_employee so it returns total non-rejected hours by employee id. Accept employee ids from employee_id, employee, or nested employee.id, trimming employee ids before grouping. Ignore rows whose trimmed, lowercased status is rejected or void. Parse hours from numbers and numeric strings; missing, blank, or None hours are 0. Preserve first-seen employee order in the returned dict.",
+  "description": "Repair hours_by_employee so it returns total non-rejected hours by employee id. Accept employee ids from employee_id, employee, or nested employee.id, trimming employee ids before grouping. If a row_id is present, duplicate row_ids represent revisions: keep only the revision with the greatest numeric submitted_at timestamp, breaking timestamp ties by later input order, before applying status and totals. Ignore rows whose trimmed, lowercased status is rejected or void after revision selection. Parse hours from numbers and numeric strings; missing, blank, or None hours are 0. Preserve first-seen employee order based on accepted rows in the returned dict.",
   "entrypoint": "timesheets.py"
 }

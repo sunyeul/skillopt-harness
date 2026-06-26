@@ -3,17 +3,28 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from categories import unique_categories
+from categories import category_paths
 
 
-def test_dict_aliases_whitespace_normalization_and_malformed_rows():
-    assert unique_categories(
+def test_tombstones_remove_descendants_and_block_readd_until_revived():
+    assert category_paths(
         [
-            {"name": " Data  Science, Research "},
-            "research | Ops",
-            {"category": "ops, Customer Success"},
-            {"label": " "},
-            {},
-            {"category": None},
+            "ops > runbooks",
+            "ops > runbooks > deploy",
+            {"path": "ops > runbooks", "deleted": True},
+            "ops > runbooks > ignored",
+            {"path": "ops > runbooks", "revive": True},
+            "ops > runbooks > restore",
         ]
-    ) == ["data science", "research", "ops", "customer success"]
+    ) == ["ops", "ops > runbooks", "ops > runbooks > restore"]
+
+
+def test_aliases_apply_to_each_segment_case_insensitively_and_skip_bad_rows():
+    assert category_paths(
+        [
+            {"name": "Data / ML", "aliases": {"ml": "Machine Learning", "data": "Analytics"}},
+            {"label": None},
+            {},
+            "analytics / BI",
+        ]
+    ) == ["analytics", "analytics > machine learning", "analytics > bi"]

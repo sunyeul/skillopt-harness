@@ -50,3 +50,27 @@ def test_exact_schema_duplicate_resolution_and_malformed_rows():
         ["id", "title", "kind", "public"],
         ["id", "title", "kind", "public"],
     ]
+
+
+def test_updated_at_controls_duplicate_title_and_kind_fields():
+    assert normalize_events(
+        [
+            {"id": "x", "title": " older title ", "kind": "talk", "updated_at": 10, "public": "no"},
+            {"id": "x", "title": " newer title ", "kind": "", "updated_at": 20},
+            {"id": "x", "title": "", "kind": " WORKSHOP ", "updated_at": 20, "public": True},
+        ]
+    ) == [
+        {"id": "x", "title": "Newer Title", "kind": "workshop", "public": True},
+    ]
+
+
+def test_latest_tombstone_omits_event():
+    assert normalize_events(
+        [
+            {"id": "gone", "title": "Old", "kind": "talk", "updated_at": 10, "public": True},
+            {"id": "gone", "status": "deleted", "updated_at": 20},
+            {"id": "keep", "title": "Still Here", "kind": "demo", "updated_at": 1},
+        ]
+    ) == [
+        {"id": "keep", "title": "Still Here", "kind": "demo", "public": False},
+    ]

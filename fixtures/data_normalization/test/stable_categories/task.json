@@ -1,5 +1,5 @@
 {
-  "id": "data-test-stable-categories",
-  "description": "Repair unique_categories so it accepts string categories or dict categories from category, label, or name fields. Split pipe- or comma-separated category lists, trim and collapse whitespace, lowercase categories, skip blank, missing, None, or non-string category values, collapse duplicates, and preserve first-seen canonical order.",
+  "id": "data-test-category-tree",
+  "description": "Repair category_paths so it normalizes a category tree from mixed rows. Each row is either a string path or a dict with path, category, label, or name. Split paths on '>' or '/', trim and collapse whitespace in each segment, lowercase segments, and skip blank segments. Dict rows may include aliases mapping raw segment names to canonical segment names; apply aliases case-insensitively after trimming. Dict rows with deleted True or status deleted/remove are tombstones: remove that exact normalized path and all descendant paths seen so far, and prevent later rows from re-adding that path or any descendant path unless the tombstoned path is later seen with revive True. Preserve first-seen sibling order under each parent and return full paths joined by ' > ' in preorder. Skip malformed rows without a usable string path.",
   "entrypoint": "categories.py"
 }

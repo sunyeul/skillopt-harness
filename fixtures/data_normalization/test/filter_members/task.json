@@ -1,5 +1,5 @@
 {
   "id": "data-test-filter-members",
-  "description": "Repair active_member_ids so it accepts member id aliases id, member_id, user_id, and nested member.id. Active status tokens are active, enabled, yes, 1, or True after trimming and case-normalizing strings; all other or missing statuses are inactive. Trim ids, skip blank or missing ids, collapse duplicate canonical ids, and return the ids sorted.",
+  "description": "Repair active_member_ids so it accepts member id aliases id, member_id, user_id, and nested member.id. Active status tokens are active, enabled, yes, 1, or True after trimming and case-normalizing strings; all other or missing statuses are inactive. Trim ids and skip blank or missing ids. For duplicate canonical ids, choose the status row by source priority first (manual > directory > import > missing/other), then by greatest numeric updated_at timestamp, then by later input order. Return the ids whose winning row is active, sorted lexicographically.",
   "entrypoint": "members.py"
 }

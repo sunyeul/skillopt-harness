@@ -33,3 +33,15 @@ def test_cancelled_and_void_orders_do_not_create_or_update_customers():
     )
 
     assert list(result.items()) == [("c1", 4.0), ("c2", 5)]
+
+
+def test_order_revisions_are_selected_before_status_and_totals():
+    assert totals_by_customer(
+        [
+            {"order_id": "o1", "customer_id": "c1", "amount": 10, "updated_at": 1},
+            {"order_id": "o1", "customer_id": "c1", "amount": 20, "updated_at": 3, "status": "void"},
+            {"order_id": "o2", "customer_id": "c2", "amount": "4", "updated_at": 5},
+            {"order_id": "o2", "customer_id": "c2", "amount": "6", "updated_at": 5},
+            {"customer_id": "c1", "amount": "1.5"},
+        ]
+    ) == {"c2": 6, "c1": 1.5}

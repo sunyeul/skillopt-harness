@@ -35,3 +35,17 @@ def test_duplicate_ids_keep_enabled_state_and_later_nonblank_fields():
         {"id": 2, "owner": "Earlier Sort", "email": "two@example.com", "enabled": False},
         {"id": 3, "owner": "Final Owner", "email": "final@example.com", "enabled": True},
     ]
+
+
+def test_duplicate_ids_use_updated_at_for_owner_and_email_fields():
+    assert normalize_accounts(
+        [
+            {"id": 7, "owner": "old owner", "email": "old@example.com", "updated_at": 10, "enabled": "no"},
+            {"id": 7, "owner": "new owner", "email": "", "updated_at": 20, "enabled": "disabled"},
+            {"id": 7, "owner": "", "email": "NEW@EXAMPLE.COM", "updated_at": 20, "enabled": "enabled"},
+            {"id": 8, "name": " no timestamp ", "email": "nt@example.com"},
+        ]
+    ) == [
+        {"id": 7, "owner": "New Owner", "email": "new@example.com", "enabled": True},
+        {"id": 8, "owner": "No Timestamp", "email": "nt@example.com", "enabled": False},
+    ]

@@ -1,5 +1,5 @@
 {
   "id": "data-selection-parse-subscriptions",
-  "description": "Repair subscription_flags so it returns a dict from normalized plan names to booleans. Read the plan from plan, name, or subscription.plan, trim and lowercase it, and skip blank plans. Trim and lowercase string flag values before comparison. Values 'enabled', 'yes', '1', and True mean True; every other value, missing value, blank string, and None means False. Later rows override earlier rows for the same normalized plan.",
+  "description": "Repair subscription_flags so it returns a dict from normalized plan names to booleans. Read the plan from plan, name, or subscription.plan, trim and lowercase it, and skip blank plans. Trim and lowercase string flag values before comparison. Values 'enabled', 'yes', '1', and True mean True; every other value, missing value, blank string, and None means False. For duplicate plans, choose the winning row by source priority first (billing > crm > import > missing/other), then by greatest numeric updated_at timestamp, then by later input order. The winning row's normalized boolean is the output value.",
   "entrypoint": "subscriptions.py"
 }

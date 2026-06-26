@@ -1,5 +1,5 @@
 {
   "id": "data-train-group-orders",
-  "description": "Repair totals_by_customer so it returns total order amount by customer id while preserving first-seen canonical customer order. Read the customer from customer_id, customer.id, or customer, trimming string ids and skipping blank or missing customers. Ignore cancelled or void statuses after trimming and case-normalizing status values. Parse amounts from ints, floats, and numeric strings; missing, blank, or None amount is 0.",
+  "description": "Repair totals_by_customer so it returns total order amount by customer id while preserving first-seen canonical customer order. Read the customer from customer_id, customer.id, or customer, trimming string ids and skipping blank or missing customers. If order_id is present, duplicate order_ids are revisions: keep only the row with the greatest numeric updated_at timestamp, breaking timestamp ties by later input order, before applying status and totals. Ignore cancelled or void statuses after revision selection and after trimming and case-normalizing status values. Parse amounts from ints, floats, and numeric strings; missing, blank, or None amount is 0.",
   "entrypoint": "orders.py"
 }

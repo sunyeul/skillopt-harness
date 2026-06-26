@@ -1,5 +1,5 @@
 {
   "id": "data-test-group-expenses",
-  "description": "Repair totals_by_project so it returns numeric totals by project id. Read project ids from project_id, projectId, project, or nested project.id, trim project ids, and skip blank or missing project ids. Ignore rows whose trimmed and case-normalized status is rejected or void. Parse numeric amounts from numbers or numeric strings; missing or blank amount is 0. Preserve first-seen project order in the returned dict.",
+  "description": "Repair totals_by_project so it returns numeric totals by project id. Read project ids from project_id, projectId, project, or nested project.id, trim project ids, and skip blank or missing project ids. If an expense_id is present, duplicate expense_ids are revisions: keep only the row with the greatest numeric updated_at timestamp, breaking timestamp ties by later input order, before applying status and totals. Ignore rows whose trimmed and case-normalized status is rejected or void after revision selection. Parse numeric amounts from numbers or numeric strings; missing or blank amount is 0. Preserve first-seen project order based on accepted rows in the returned dict.",
   "entrypoint": "expenses.py"
 }

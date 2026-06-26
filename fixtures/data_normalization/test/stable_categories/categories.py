@@ -1,2 +1,2 @@
-def unique_categories(categories):
-    return list(set(categories))
+def category_paths(rows):
+    return list(rows)
