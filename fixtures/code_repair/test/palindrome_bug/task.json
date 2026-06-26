@@ -1,5 +1,5 @@
 {
   "id": "test-palindrome-bug",
-  "description": "Repair is_palindrome so it returns True when the string reads the same forward and backward.",
+  "description": "Repair is_palindrome so it performs a case-insensitive alphanumeric palindrome check; ignores spaces and punctuation; treats an empty normalized string as true; and rejects non-strings with TypeError.",
   "entrypoint": "palindrome.py"
 }

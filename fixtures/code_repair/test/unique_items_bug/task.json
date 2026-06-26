@@ -1,5 +1,5 @@
 {
   "id": "test-unique-items-bug",
-  "description": "Repair unique_items so it returns values in first-seen order with duplicates removed.",
+  "description": "Repair unique_items so it removes duplicates in first-seen order without mutating the input. String values are compared after trimming and lowercasing, blank strings are skipped, and unhashable lists or dicts are compared by structural value while preserving the first-seen output representation.",
   "entrypoint": "unique.py"
 }

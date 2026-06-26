@@ -1,5 +1,5 @@
 {
   "id": "test-is-even-bug",
-  "description": "Repair is_even so it returns True for even integers and False for odd integers.",
+  "description": "Repair is_even so it supports ints and integer strings with whitespace/sign; rejects booleans and non-integer strings with TypeError; and handles negative values and zero.",
   "entrypoint": "parity.py"
 }

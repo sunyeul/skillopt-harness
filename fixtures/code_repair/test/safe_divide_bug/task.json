@@ -1,5 +1,5 @@
 {
   "id": "test-safe-divide-bug",
-  "description": "Repair safe_divide so it returns None for division by zero and otherwise returns the quotient.",
+  "description": "Repair safe_divide so it coerces numeric strings, returns None for zero denominator or invalid numeric input, preserves the float quotient, and rejects booleans by returning None.",
   "entrypoint": "division.py"
 }

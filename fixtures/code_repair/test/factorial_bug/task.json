@@ -1,5 +1,5 @@
 {
   "id": "test-factorial-bug",
-  "description": "Repair factorial so it returns n factorial for non-negative integers.",
+  "description": "Repair factorial so it supports non-negative integers and integer strings; rejects booleans, negatives, and non-integers with ValueError; and uses an iterative implementation to avoid recursion limits for moderate inputs.",
   "entrypoint": "factorial.py"
 }
