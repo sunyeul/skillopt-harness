@@ -1,0 +1,24 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "SkillOpt Harness"
+        }
+    ],
+    "settings": {
+        "[python]": {
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.fixAll": "explicit",
+                "source.organizeImports": "explicit"
+            },
+            "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "[markdown]": {
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.fixAll.markdownlint": "explicit"
+            }
+        }
+    }
+}

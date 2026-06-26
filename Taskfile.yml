@@ -1,0 +1,94 @@
+version: "3"
+
+vars:
+  CLI: skillopt-harness
+  TRACK: code_repair
+  TASK: ""
+  SPLIT: train
+  WORKSPACE: workspaces/{{.TRACK}}/{{.TASK}}
+  EXPERIMENT: runs/manual-experiment
+  LOOP: loop-01
+  INITIAL_SKILL: .codex/skills/code-repair/SKILL.md
+  TRAIN_ROLLOUTS: "{{.EXPERIMENT}}/{{.LOOP}}/train-rollouts.jsonl"
+  EDIT_PROPOSALS: "{{.EXPERIMENT}}/{{.LOOP}}/edit-proposals.json"
+  PARENT_SELECTION: "{{.EXPERIMENT}}/{{.LOOP}}/parent-selection.jsonl"
+  CANDIDATE_SELECTION: "{{.EXPERIMENT}}/{{.LOOP}}/candidate-selection.jsonl"
+  EPOCH_INPUTS: "{{.EXPERIMENT}}/epoch-inputs.json"
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  sync:
+    desc: Create or update the uv environment from pyproject.toml and uv.lock
+    cmds:
+      - uv sync --dev
+
+  init:
+    desc: Initialize fixture directories and the runs directory
+    cmds:
+      - uv run {{.CLI}} init-fixtures
+
+  list:
+    desc: List tasks in a track split
+    cmds:
+      - uv run {{.CLI}} list-tasks --track {{.TRACK}} --split {{.SPLIT}}
+
+  prepare:
+    desc: Copy a fixture task into a workspace
+    cmds:
+      - uv run {{.CLI}} prepare-task --track {{.TRACK}} --task {{.TASK}} --split {{.SPLIT}} --output {{.WORKSPACE}}
+
+  prepare-force:
+    desc: Recreate a fixture task workspace
+    cmds:
+      - uv run {{.CLI}} prepare-task --track {{.TRACK}} --task {{.TASK}} --split {{.SPLIT}} --output {{.WORKSPACE}} --force
+
+  grade:
+    desc: Grade a prepared workspace
+    cmds:
+      - uv run {{.CLI}} grade-task --track {{.TRACK}} --workspace {{.WORKSPACE}} --output runs/{{.TRACK}}-manual.jsonl
+
+  loop-run:
+    desc: Run the full manual SkillOpt loop from prepared external artifacts
+    cmds:
+      - uv run {{.CLI}} loop-run --track {{.TRACK}} --experiment-dir {{.EXPERIMENT}} --loop-id {{.LOOP}} --initial-skill {{.INITIAL_SKILL}} --rollout-records {{.TRAIN_ROLLOUTS}} --edit-proposals {{.EDIT_PROPOSALS}} --parent-selection-records {{.PARENT_SELECTION}} --candidate-selection-records {{.CANDIDATE_SELECTION}}
+
+  epoch-run:
+    desc: Run a 2-4 epoch manual SkillOpt series from prepared external artifacts
+    cmds:
+      - uv run {{.CLI}} epoch-run --track {{.TRACK}} --experiment-dir {{.EXPERIMENT}} --initial-skill {{.INITIAL_SKILL}} --epoch-inputs {{.EPOCH_INPUTS}}
+
+  test:
+    desc: Run the full test suite
+    cmds:
+      - uv run pytest
+
+  lint:
+    desc: Run Ruff checks
+    cmds:
+      - uv run ruff check .
+
+  format:
+    desc: Format Python code with Ruff
+    cmds:
+      - uv run ruff format .
+
+  check:
+    desc: Run lint and tests
+    cmds:
+      - task: lint
+      - task: test
+
+  help:
+    desc: Show SkillOpt harness CLI help
+    cmds:
+      - uv run {{.CLI}} --help
+
+  clean:
+    desc: Remove local run outputs and Python test caches
+    cmds:
+      - rm -rf runs workspaces .pytest_cache .ruff_cache
+      - find . -type d -name __pycache__ -prune -exec rm -rf {} +

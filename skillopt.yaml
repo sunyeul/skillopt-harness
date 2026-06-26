@@ -1,0 +1,29 @@
+timeout_seconds: 180
+output_dir: runs
+tracks:
+  code_repair:
+    skill: .codex/skills/code-repair/SKILL.md
+    evaluator_command:
+      - uv
+      - run
+      - pytest
+      - -q
+      - tests_visible
+      - tests_hidden
+    splits:
+      train: fixtures/code_repair/train
+      selection: fixtures/code_repair/selection
+      test: fixtures/code_repair/test
+  data_normalization:
+    skill: .codex/skills/data-normalization/SKILL.md
+    evaluator_command:
+      - uv
+      - run
+      - pytest
+      - -q
+      - tests_visible
+      - tests_hidden
+    splits:
+      train: fixtures/data_normalization/train
+      selection: fixtures/data_normalization/selection
+      test: fixtures/data_normalization/test
