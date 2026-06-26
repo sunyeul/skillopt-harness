@@ -1,0 +1,4 @@
+interface:
+  display_name: "SkillOpt Loop Runner"
+  short_description: "Run manual SkillOpt loops safely"
+  default_prompt: "Run a SkillOpt loop for TRACK=code_repair using this repo's harness discipline."
