@@ -1,5 +1,5 @@
 {
   "id": "data-selection-filter-products",
-  "description": "Repair published_skus so it returns published product SKUs sorted by normalized SKU. Read the SKU from sku or nested product.sku, trim it, skip blank or missing SKUs, and collapse duplicate normalized SKUs. Trim and lowercase string status values before comparison. Published status tokens are 'published', 'live', '1', and True; missing, blank, and all other status values are unpublished.",
+  "description": "Repair published_skus so it returns published product SKUs sorted by normalized SKU. Read the SKU from sku or nested product.sku, trim it, skip missing, blank, None, or malformed SKU sources, and collapse duplicate normalized SKUs. Trim and lowercase string status values before comparison. Published status tokens are 'published', 'live', '1', and True; missing, blank, and all other status values are unpublished.",
   "entrypoint": "products.py"
 }
