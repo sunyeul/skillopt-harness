@@ -1,0 +1,5 @@
+{
+  "id": "selection-normalize-records",
+  "description": "Repair normalize_records so it returns records sorted by id. Each output record has id, name, and active. Trim names, title-case names, and default missing active to False.",
+  "entrypoint": "records.py"
+}

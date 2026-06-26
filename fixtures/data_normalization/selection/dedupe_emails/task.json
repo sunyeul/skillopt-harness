@@ -1,0 +1,5 @@
+{
+  "id": "data-selection-dedupe-emails",
+  "description": "Repair unique_emails so it returns normalized unique emails in first-seen order. Trim whitespace, lowercase emails, and skip blanks.",
+  "entrypoint": "emails.py"
+}

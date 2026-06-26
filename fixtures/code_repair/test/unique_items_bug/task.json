@@ -1,0 +1,5 @@
+{
+  "id": "test-unique-items-bug",
+  "description": "Repair unique_items so it returns values in first-seen order with duplicates removed.",
+  "entrypoint": "unique.py"
+}

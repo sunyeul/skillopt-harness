@@ -1,0 +1,5 @@
+{
+  "id": "train-normalize-people",
+  "description": "Repair normalize_people so it returns people sorted by id. Each output person has id, name, and active. Trim names, title-case names, and default missing active to False.",
+  "entrypoint": "people.py"
+}

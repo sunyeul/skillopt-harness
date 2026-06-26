@@ -1,0 +1,5 @@
+{
+  "id": "selection-merge-intervals",
+  "description": "Repair merge_intervals so it merges unsorted inclusive intervals. Intervals that touch, such as [1, 2] and [2, 4], should be merged.",
+  "entrypoint": "intervals.py"
+}

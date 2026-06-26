@@ -1,0 +1,5 @@
+{
+  "id": "test-factorial-bug",
+  "description": "Repair factorial so it returns n factorial for non-negative integers.",
+  "entrypoint": "factorial.py"
+}

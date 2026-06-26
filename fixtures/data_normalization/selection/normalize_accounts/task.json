@@ -1,0 +1,5 @@
+{
+  "id": "data-selection-normalize-accounts",
+  "description": "Repair normalize_accounts so it returns accounts sorted by id. Each output account has id, owner, email, and enabled. Trim owner and email, title-case owner, lowercase email, and default missing enabled to False.",
+  "entrypoint": "accounts.py"
+}

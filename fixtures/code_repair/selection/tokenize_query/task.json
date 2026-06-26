@@ -1,0 +1,5 @@
+{
+  "id": "selection-tokenize-query",
+  "description": "Repair parse_query so it parses a URL query string into a dict. Decode percent escapes and '+'. Repeated keys should collect values in a list. Keys without '=' have an empty string value.",
+  "entrypoint": "query.py"
+}

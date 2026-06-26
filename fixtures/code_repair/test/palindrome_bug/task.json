@@ -1,0 +1,5 @@
+{
+  "id": "test-palindrome-bug",
+  "description": "Repair is_palindrome so it returns True when the string reads the same forward and backward.",
+  "entrypoint": "palindrome.py"
+}

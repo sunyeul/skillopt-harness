@@ -1,0 +1,5 @@
+{
+  "id": "data-selection-parse-subscriptions",
+  "description": "Repair subscription_flags so it returns a dict from normalized plan names to booleans. Plan names are stripped and lowercased. Values 'enabled', 'yes', '1', and True mean True; all other values, missing values, blank strings, and None mean False.",
+  "entrypoint": "subscriptions.py"
+}

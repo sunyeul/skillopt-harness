@@ -1,0 +1,5 @@
+{
+  "id": "data-train-active-skus",
+  "description": "Repair active_skus so it returns active item skus sorted by sku. Status comparison is case-insensitive, missing status is inactive, and blank skus are skipped.",
+  "entrypoint": "inventory.py"
+}

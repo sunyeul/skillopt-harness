@@ -1,0 +1,5 @@
+{
+  "id": "selection-top-k-frequent",
+  "description": "Repair top_k_frequent so it returns the k most frequent values. Sort by descending frequency and preserve first-seen order for ties.",
+  "entrypoint": "frequency.py"
+}

@@ -1,0 +1,5 @@
+{
+  "id": "data-test-parse-preferences",
+  "description": "Repair preference_flags so it returns normalized preference booleans. Names are stripped and lowercased. Values 'on', 'yes', '1', and True mean True; all other values, missing values, blank strings, and None mean False.",
+  "entrypoint": "preferences.py"
+}

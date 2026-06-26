@@ -1,0 +1,5 @@
+{
+  "id": "data-test-filter-members",
+  "description": "Repair active_member_ids so it returns active member ids sorted by id. Status comparison is case-insensitive, missing status is inactive, and blank ids are skipped.",
+  "entrypoint": "members.py"
+}

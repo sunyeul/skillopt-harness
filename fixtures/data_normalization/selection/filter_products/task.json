@@ -1,0 +1,5 @@
+{
+  "id": "data-selection-filter-products",
+  "description": "Repair published_skus so it returns published product skus sorted by sku. Status comparison is case-insensitive, missing status is unpublished, and blank skus are skipped.",
+  "entrypoint": "products.py"
+}

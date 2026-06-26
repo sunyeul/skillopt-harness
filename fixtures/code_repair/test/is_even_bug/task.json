@@ -1,0 +1,5 @@
+{
+  "id": "test-is-even-bug",
+  "description": "Repair is_even so it returns True for even integers and False for odd integers.",
+  "entrypoint": "parity.py"
+}

@@ -1,0 +1,5 @@
+{
+  "id": "train-stable-frequency",
+  "description": "Repair rank_labels so it returns the limit most frequent labels. Sort by descending frequency and preserve first-seen order for ties.",
+  "entrypoint": "frequency.py"
+}

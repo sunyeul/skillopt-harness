@@ -1,0 +1,5 @@
+{
+  "id": "data-train-normalize-contacts",
+  "description": "Repair normalize_contacts so it returns contacts sorted by id. Each output contact has id, name, email, and active. Trim names and emails, title-case names, lowercase emails, and default missing active to True.",
+  "entrypoint": "contacts.py"
+}

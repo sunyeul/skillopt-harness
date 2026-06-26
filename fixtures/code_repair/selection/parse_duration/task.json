@@ -1,0 +1,5 @@
+{
+  "id": "selection-parse-duration",
+  "description": "Repair parse_duration so it converts tokens like '1h 30m', '2m 5s', and '45s' to total seconds. Units are h, m, and s. Invalid tokens should raise ValueError.",
+  "entrypoint": "duration.py"
+}

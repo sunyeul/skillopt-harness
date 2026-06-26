@@ -1,0 +1,5 @@
+{
+  "id": "data-test-normalize-events",
+  "description": "Repair normalize_events so it returns events sorted by id. Each output event has id, title, kind, and public. Trim title and kind, title-case title, lowercase kind, and default missing public to False.",
+  "entrypoint": "events.py"
+}

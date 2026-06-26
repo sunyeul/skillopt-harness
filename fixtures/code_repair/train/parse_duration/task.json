@@ -1,0 +1,5 @@
+{
+  "id": "train-parse-duration",
+  "description": "Repair parse_duration so it converts space-separated tokens like '2h 15m', '3m 5s', and '45s' to total seconds. Units are h, m, and s. Invalid tokens should raise ValueError.",
+  "entrypoint": "duration.py"
+}

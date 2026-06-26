@@ -1,0 +1,5 @@
+{
+  "id": "train-clamp-bug",
+  "description": "Repair clamp so it returns the value bounded by the inclusive low and high limits.",
+  "entrypoint": "bounds.py"
+}

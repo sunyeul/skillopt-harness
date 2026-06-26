@@ -1,0 +1,5 @@
+{
+  "id": "data-test-stable-categories",
+  "description": "Repair unique_categories so it returns normalized unique categories in first-seen order. Trim whitespace, lowercase categories, and skip blank categories.",
+  "entrypoint": "categories.py"
+}

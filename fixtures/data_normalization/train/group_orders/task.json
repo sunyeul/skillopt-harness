@@ -1,0 +1,5 @@
+{
+  "id": "data-train-group-orders",
+  "description": "Repair totals_by_customer so it returns total order amount by customer id. Ignore cancelled orders, treat missing amount as 0, and preserve the first-seen customer order in the returned dict.",
+  "entrypoint": "orders.py"
+}

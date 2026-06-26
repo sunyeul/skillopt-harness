@@ -1,0 +1,5 @@
+{
+  "id": "data-train-unique-tags",
+  "description": "Repair unique_tags so it returns normalized unique tags in first-seen order. Trim whitespace, lowercase tags, and skip blank tags.",
+  "entrypoint": "tags.py"
+}
