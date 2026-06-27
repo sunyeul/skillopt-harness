@@ -1,0 +1,22 @@
+[
+  {
+    "id": "dn-loop-01-canonical-scalar-keys",
+    "op": "add",
+    "target": "- When implementing described conflict rules, normalize comparison keys first,\n  rank candidate rows with small helper functions for source priority,\n  numeric timestamps, and input order, and resolve duplicates or revisions\n  before applying filters, totals, or output formatting.",
+    "position": "after",
+    "content": "\n- For every grouping, deduplication, revision, or output-key path, build one\n  canonical scalar key with a helper before storing rows in dicts or `seen` sets:\n  unwrap documented nested aliases, trim strings, lowercase keys when the task\n  says normalized or case-insensitive, and reject missing, blank, dict, list, or\n  otherwise malformed key values instead of letting raw aliases become keys.",
+    "score": 0.91,
+    "rationale": "Two train failures came from partial key normalization: SKU duplicates were grouped by raw case-preserving strings, and malformed customer aliases reached dict membership. The edit makes the intended canonical-key behavior explicit and local.",
+    "evidence": [
+      "data-train-active-skus train grade failed because `a-1` and `A-1` were not resolved through one normalized key before source-priority winner selection.",
+      "data-train-group-orders train grade failed because a malformed customer dict without `id` became an unhashable grouping key.",
+      "data-train-unique-tags passed after canonicalizing each tag before `seen` membership."
+    ],
+    "support": "Supported by two train failures and one train success pattern.",
+    "behavioral_change": "Repairers should write explicit canonical-key helpers before duplicate/revision/grouping logic and reject malformed aliases before dict/set use.",
+    "novelty_vs_parent": "The parent says to normalize comparison keys but does not require a single scalar helper, malformed-key rejection, or using the canonical key for dict/set storage and output-key paths.",
+    "novelty_vs_rejected": "No prior rejected edit memory exists for this experiment.",
+    "mechanical_target": "Add one Procedure bullet immediately after the existing conflict-rules normalization bullet.",
+    "leakage_check": "Uses only train split task descriptions, visible tests, repair behavior, and train grade records."
+  }
+]
