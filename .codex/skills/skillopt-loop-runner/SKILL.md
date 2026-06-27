@@ -64,9 +64,10 @@ the target parent skill, and existing lineage artifacts needed to start.
 8. Accept only if `candidate_score > parent_score` and the run is clean.
 9. On accept, update current-best/best-skill lineage. On reject, leave lineage
    unchanged and record the reason.
-10. After final adoption, measure test split for reporting. If the user asks
-    for baseline comparison, measure the immutable initial baseline or loop
-    parent on test only after adoption and label it reporting-only.
+10. After final adoption, measure test split for reporting. When test is
+    measured, also measure the immutable initial baseline or loop parent on the
+    same test tasks when possible, label it reporting-only, and record the test
+    delta without using it as an adoption gate.
 11. Run `uv run pytest` and `uv run ruff check .` before handoff when the run
     produced tracked artifact or skill changes.
 
@@ -96,6 +97,6 @@ Report:
 - parent and candidate selection scores;
 - accept/reject decision and contamination status;
 - final test score when measured;
-- optional post-hoc baseline/parent test score and test delta when measured;
+- post-hoc baseline/parent test score and test delta when measured;
 - verification results;
 - any dirty pre-existing files intentionally left untouched.

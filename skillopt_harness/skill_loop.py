@@ -237,6 +237,8 @@ def run_full_loop(
     parent_selection_records: Path,
     candidate_selection_records: Path,
     best_selection_records: Path | None = None,
+    baseline_test_records: Path | None = None,
+    candidate_test_records: Path | None = None,
     contaminated: bool = False,
     contamination_reason: str | None = None,
     rollout_isolation: RolloutIsolation = "unknown",
@@ -267,6 +269,8 @@ def run_full_loop(
         parent_selection_records=parent_selection_records,
         candidate_selection_records=candidate_selection_records,
         best_selection_records=best_selection_records,
+        baseline_test_records=baseline_test_records,
+        candidate_test_records=candidate_test_records,
         current_skill_output=current_best,
         best_skill_output=best_skill,
         contaminated=contaminated,
@@ -297,6 +301,11 @@ def run_full_loop(
         "parent_score": gate["parent_score"],
         "candidate_score": gate["candidate_score"],
         "best_score": gate["best_score"],
+        "baseline_test_score": gate["baseline_test_score"],
+        "candidate_test_score": gate["candidate_test_score"],
+        "test_delta": gate["test_delta"],
+        "baseline_test_records": gate["baseline_test_records"],
+        "candidate_test_records": gate["candidate_test_records"],
         "leakage_status": gate["leakage_status"],
         "contamination_reason": gate["contamination_reason"],
         "reject_reason": gate["reject_reason"],
@@ -440,6 +449,8 @@ def _run_loop_gate(
     parent_selection_records: Path,
     candidate_selection_records: Path,
     best_selection_records: Path | None,
+    baseline_test_records: Path | None,
+    candidate_test_records: Path | None,
     current_skill_output: Path | None,
     best_skill_output: Path | None,
     contaminated: bool = False,
@@ -469,6 +480,11 @@ def _run_loop_gate(
         if best_selection_records is not None
         else parent_score
     )
+    test_comparison = _test_comparison(
+        loop_dir=loop_dir,
+        baseline_test_records=baseline_test_records,
+        candidate_test_records=candidate_test_records,
+    )
     decision = gate_candidate(
         parent_score,
         candidate_score,
@@ -490,6 +506,7 @@ def _run_loop_gate(
         "parent_score": parent_score,
         "candidate_score": candidate_score,
         "best_score": best_score,
+        **test_comparison,
         "leakage_status": "contaminated" if contaminated else "clean",
         "contamination_reason": contamination_reason if contaminated else None,
         "rollout_isolation": rollout_isolation,
@@ -596,15 +613,63 @@ def _parse_edit(data: Any) -> SkillEdit:
 
 
 def _selection_score(path: Path) -> float:
+    return _record_score(path, "Selection")
+
+
+def _record_score(path: Path, label: str) -> float:
     records = read_jsonl(path)
     if not records:
-        raise ValueError(f"Selection records are empty: {path}")
+        raise ValueError(f"{label} records are empty: {path}")
     scores: list[float] = []
     for index, record in enumerate(records, start=1):
         if "score" not in record:
-            raise ValueError(f"Selection record {index} is missing score: {path}")
+            raise ValueError(f"{label} record {index} is missing score: {path}")
         scores.append(float(record["score"]))
     return sum(scores) / len(scores)
+
+
+def _test_comparison(
+    *,
+    loop_dir: Path,
+    baseline_test_records: Path | None,
+    candidate_test_records: Path | None,
+) -> dict[str, Any]:
+    if baseline_test_records is None and candidate_test_records is None:
+        return {
+            "baseline_test_score": None,
+            "candidate_test_score": None,
+            "test_delta": None,
+            "baseline_test_records": None,
+            "candidate_test_records": None,
+        }
+    if baseline_test_records is None or candidate_test_records is None:
+        raise ValueError(
+            "--baseline-test-records and --candidate-test-records must be provided together"
+        )
+
+    baseline_task_ids = _record_task_ids(baseline_test_records, "Baseline test")
+    candidate_task_ids = _record_task_ids(candidate_test_records, "Candidate test")
+    if baseline_task_ids != candidate_task_ids:
+        raise ValueError(
+            "Baseline and candidate test tasks differ: "
+            f"baseline={baseline_task_ids}, candidate={candidate_task_ids}"
+        )
+
+    baseline_records_copy = _copy_artifact(
+        baseline_test_records, loop_dir / "baseline-test-reporting-only.jsonl"
+    )
+    candidate_records_copy = _copy_artifact(
+        candidate_test_records, loop_dir / "candidate-test-reporting-only.jsonl"
+    )
+    baseline_score = _record_score(baseline_test_records, "Baseline test")
+    candidate_score = _record_score(candidate_test_records, "Candidate test")
+    return {
+        "baseline_test_score": baseline_score,
+        "candidate_test_score": candidate_score,
+        "test_delta": candidate_score - baseline_score,
+        "baseline_test_records": str(baseline_records_copy),
+        "candidate_test_records": str(candidate_records_copy),
+    }
 
 
 def _default_edit_id(data: dict[str, Any]) -> str:
@@ -802,6 +867,19 @@ def _decision_markdown(record: dict[str, Any]) -> str:
         if contamination_reason
         else []
     )
+    test_lines: list[str] = []
+    if record.get("baseline_test_score") is not None or record.get("candidate_test_score") is not None:
+        test_lines = [
+            "## Reporting-Only Test Comparison",
+            "",
+            f"- Baseline test score: `{_format_score(record.get('baseline_test_score'))}`",
+            f"- Candidate test score: `{_format_score(record.get('candidate_test_score'))}`",
+            f"- Test delta: `{_format_score(record.get('test_delta'))}`",
+            "",
+            "This comparison is post-adoption reporting only. Test scores must not "
+            "affect the selection gate or later candidate edits.",
+            "",
+        ]
     return "\n".join(
         [
             "# SkillOpt Gate Decision",
@@ -817,6 +895,7 @@ def _decision_markdown(record: dict[str, Any]) -> str:
             "Strict improvement is required over the parent/current skill. "
             "`accept_new_best` additionally requires improvement over the recorded best.",
             "",
+            *test_lines,
         ]
     )
 
@@ -828,13 +907,17 @@ def _format_score(value: Any) -> str:
 
 
 def _selection_task_ids(path: Path) -> list[str]:
+    return _record_task_ids(path, "Selection")
+
+
+def _record_task_ids(path: Path, label: str) -> list[str]:
     records = read_jsonl(path)
     if not records:
-        raise ValueError(f"Selection records are empty: {path}")
+        raise ValueError(f"{label} records are empty: {path}")
     task_ids: list[str] = []
     for index, record in enumerate(records, start=1):
         task = record.get("task")
         if not isinstance(task, dict) or "id" not in task:
-            raise ValueError(f"Selection record {index} is missing task.id: {path}")
+            raise ValueError(f"{label} record {index} is missing task.id: {path}")
         task_ids.append(str(task["id"]))
     return task_ids

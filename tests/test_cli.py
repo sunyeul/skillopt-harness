@@ -648,6 +648,127 @@ class CliTests(unittest.TestCase):
             self.assertIn("- Keep changes tiny.", (experiment_dir / "current-best.md").read_text())
             self.assertEqual((experiment_dir / "best-skill.md").read_text(), "# Best\n")
 
+    def test_loop_run_records_reporting_only_test_comparison_without_gating(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_path = _write_config(root)
+            initial_skill = root / "initial-skill.md"
+            initial_skill.write_text("# Skill\n\n## Rules\n")
+            rollout_records = root / "train-rollouts.jsonl"
+            rollout_records.write_text('{"task": {"id": "train-demo"}, "score": 1.0}\n')
+            edit_proposals = root / "edit-proposals.json"
+            _write_add_rule_proposal(edit_proposals, "add-guidance", "- Keep changes tiny.")
+            parent_records = root / "parent-selection.jsonl"
+            candidate_records = root / "candidate-selection.jsonl"
+            baseline_test_records = root / "baseline-test.jsonl"
+            candidate_test_records = root / "candidate-test.jsonl"
+            _write_score_records(parent_records, [0.0])
+            _write_score_records(candidate_records, [1.0])
+            _write_score_records(baseline_test_records, [1.0, 1.0], task_ids=["test-a", "test-b"])
+            _write_score_records(candidate_test_records, [0.0, 1.0], task_ids=["test-a", "test-b"])
+            experiment_dir = root / "runs/exp"
+
+            stdout = StringIO()
+            with redirect_stdout(stdout):
+                code = main(
+                    [
+                        "--config",
+                        str(config_path),
+                        "loop-run",
+                        "--track",
+                        "code_repair",
+                        "--experiment-dir",
+                        str(experiment_dir),
+                        "--loop-id",
+                        "loop-01",
+                        "--initial-skill",
+                        str(initial_skill),
+                        "--rollout-records",
+                        str(rollout_records),
+                        "--edit-proposals",
+                        str(edit_proposals),
+                        "--parent-selection-records",
+                        str(parent_records),
+                        "--candidate-selection-records",
+                        str(candidate_records),
+                        "--baseline-test-records",
+                        str(baseline_test_records),
+                        "--candidate-test-records",
+                        str(candidate_test_records),
+                        "--rollout-isolation",
+                        "independent",
+                    ]
+                )
+
+            self.assertEqual(code, 0)
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(result["decision"], "accept_new_best")
+            self.assertEqual(result["baseline_test_score"], 1.0)
+            self.assertEqual(result["candidate_test_score"], 0.5)
+            self.assertEqual(result["test_delta"], -0.5)
+            decision = json.loads((experiment_dir / "loop-01/gate-decision.json").read_text())
+            self.assertEqual(decision["baseline_test_score"], 1.0)
+            self.assertEqual(decision["candidate_test_score"], 0.5)
+            decision_text = (experiment_dir / "loop-01/decision.md").read_text()
+            self.assertIn("Reporting-Only Test Comparison", decision_text)
+            self.assertIn("must not affect the selection gate", decision_text)
+
+    def test_loop_run_rejects_test_comparison_task_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_path = _write_config(root)
+            initial_skill = root / "initial-skill.md"
+            initial_skill.write_text("# Skill\n\n## Rules\n")
+            rollout_records = root / "train-rollouts.jsonl"
+            rollout_records.write_text('{"task": {"id": "train-demo"}, "score": 1.0}\n')
+            edit_proposals = root / "edit-proposals.json"
+            _write_add_rule_proposal(edit_proposals, "add-guidance", "- Keep changes tiny.")
+            parent_records = root / "parent-selection.jsonl"
+            candidate_records = root / "candidate-selection.jsonl"
+            baseline_test_records = root / "baseline-test.jsonl"
+            candidate_test_records = root / "candidate-test.jsonl"
+            _write_score_records(parent_records, [0.0])
+            _write_score_records(candidate_records, [1.0])
+            _write_score_records(baseline_test_records, [1.0], task_ids=["test-a"])
+            _write_score_records(candidate_test_records, [1.0], task_ids=["test-b"])
+
+            stderr = StringIO()
+            with redirect_stderr(stderr):
+                code = main(
+                    [
+                        "--config",
+                        str(config_path),
+                        "loop-run",
+                        "--track",
+                        "code_repair",
+                        "--experiment-dir",
+                        str(root / "runs/exp"),
+                        "--loop-id",
+                        "loop-01",
+                        "--initial-skill",
+                        str(initial_skill),
+                        "--rollout-records",
+                        str(rollout_records),
+                        "--edit-proposals",
+                        str(edit_proposals),
+                        "--parent-selection-records",
+                        str(parent_records),
+                        "--candidate-selection-records",
+                        str(candidate_records),
+                        "--baseline-test-records",
+                        str(baseline_test_records),
+                        "--candidate-test-records",
+                        str(candidate_test_records),
+                        "--rollout-isolation",
+                        "independent",
+                    ]
+                )
+
+            self.assertEqual(code, 1)
+            self.assertIn("Baseline and candidate test tasks differ", stderr.getvalue())
+
     def test_loop_run_recovers_current_best_from_existing_initial_baseline(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

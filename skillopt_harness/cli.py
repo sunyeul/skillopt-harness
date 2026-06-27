@@ -52,6 +52,8 @@ def main(argv: list[str] | None = None) -> int:
     run_parser.add_argument("--parent-selection-records", required=True)
     run_parser.add_argument("--candidate-selection-records", required=True)
     run_parser.add_argument("--best-selection-records")
+    run_parser.add_argument("--baseline-test-records")
+    run_parser.add_argument("--candidate-test-records")
     run_parser.add_argument("--contaminated", action="store_true")
     run_parser.add_argument("--contamination-reason")
     run_parser.add_argument(
@@ -201,6 +203,12 @@ def _loop_run(config: HarnessConfig, args: argparse.Namespace) -> int:
             candidate_selection_records=Path(args.candidate_selection_records),
             best_selection_records=Path(args.best_selection_records)
             if args.best_selection_records
+            else None,
+            baseline_test_records=Path(args.baseline_test_records)
+            if args.baseline_test_records
+            else None,
+            candidate_test_records=Path(args.candidate_test_records)
+            if args.candidate_test_records
             else None,
             contaminated=bool(args.contaminated),
             contamination_reason=args.contamination_reason,
