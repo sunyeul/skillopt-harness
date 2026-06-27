@@ -30,3 +30,16 @@ def test_row_revisions_are_selected_before_status_and_totals():
         ]
     )
     assert list(result.items()) == [("bob", 3.5), ("ann", 1.5)]
+
+
+def test_revision_ties_use_later_input_before_rejected_filtering():
+    result = hours_by_employee(
+        [
+            {"row_id": "r3", "employee_id": "cyd", "hours": 4, "submitted_at": 9, "status": "rejected"},
+            {"row_id": "r3", "employee_id": "cyd", "hours": 7, "submitted_at": 9},
+            {"row_id": "r4", "employee_id": "dan", "hours": 5, "submitted_at": 2},
+            {"row_id": "r4", "employee_id": "dan", "hours": 8, "submitted_at": 3, "status": "void"},
+            {"employee_id": "dan", "hours": 1},
+        ]
+    )
+    assert list(result.items()) == [("cyd", 7), ("dan", 1)]

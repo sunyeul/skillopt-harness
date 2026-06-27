@@ -39,3 +39,14 @@ def test_locked_rows_block_lower_priority_scope_only():
             {"name": "beta", "value": "no", "scope": "user", "updated_at": 2},
         ]
     ) == {"beta": False}
+
+
+def test_same_scope_timestamp_ties_and_higher_scope_override_locks():
+    assert preference_flags(
+        [
+            {"name": "exports", "value": "off", "scope": "group", "updated_at": 5},
+            {"preference": "exports", "value": "on", "scope": "group", "updated_at": 5},
+            {"key": "sharing", "value": "enabled", "scope": "global", "locked": True, "updated_at": 20},
+            {"setting": "sharing", "value": "0", "scope": "user", "updated_at": 1},
+        ]
+    ) == {"exports": True, "sharing": False}

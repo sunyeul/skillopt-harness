@@ -74,3 +74,25 @@ def test_latest_tombstone_omits_event():
     ) == [
         {"id": "keep", "title": "Still Here", "kind": "demo", "public": False},
     ]
+
+
+def test_integer_one_public_token_is_public():
+    assert normalize_events(
+        [
+            {"id": "n", "title": "numeric", "kind": "flag", "public": 1},
+        ]
+    ) == [
+        {"id": "n", "title": "Numeric", "kind": "flag", "public": True},
+    ]
+
+
+def test_malformed_event_rows_are_skipped():
+    assert normalize_events(
+        [
+            None,
+            "not-an-event-row",
+            {"id": "v", "title": "valid", "kind": "demo"},
+        ]
+    ) == [
+        {"id": "v", "title": "Valid", "kind": "demo", "public": False},
+    ]

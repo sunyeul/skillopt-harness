@@ -27,3 +27,14 @@ def test_duplicate_plans_use_source_priority_timestamp_and_later_tie_break():
             {"name": "team", "enabled": "yes", "source": "crm", "updated_at": 5},
         ]
     ) == {"pro": False, "team": True}
+
+
+def test_source_priority_still_wins_when_lower_priority_is_newer():
+    assert subscription_flags(
+        [
+            {"plan": "Audit", "enabled": "yes", "source": "import", "updated_at": 100},
+            {"name": "audit", "enabled": None, "source": "billing", "updated_at": 1},
+            {"subscription": {"plan": "Ops"}, "enabled": "disabled", "source": "crm", "updated_at": 8},
+            {"plan": "ops", "enabled": "enabled", "source": "crm", "updated_at": 8},
+        ]
+    ) == {"audit": False, "ops": True}

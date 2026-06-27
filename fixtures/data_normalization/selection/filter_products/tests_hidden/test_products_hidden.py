@@ -41,3 +41,14 @@ def test_duplicate_skus_use_source_priority_before_status():
             {"sku": "c-3", "status": True},
         ]
     ) == ["b-2", "c-3"]
+
+
+def test_malformed_product_rows_are_skipped_before_sku_normalization():
+    assert published_skus(
+        [
+            None,
+            "not-a-product-row",
+            {"sku": "d-4", "status": "live"},
+            {"product": {"sku": " e-5 "}, "status": "published"},
+        ]
+    ) == ["d-4", "e-5"]

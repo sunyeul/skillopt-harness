@@ -28,3 +28,13 @@ def test_aliases_apply_to_each_segment_case_insensitively_and_skip_bad_rows():
             "analytics / BI",
         ]
     ) == ["analytics", "analytics > machine learning", "analytics > bi"]
+
+
+def test_reviving_descendant_path_unblocks_tombstoned_ancestors():
+    assert category_paths(
+        [
+            "docs > api > v1",
+            {"path": "docs > api", "deleted": True},
+            {"path": "docs > api > v2", "revive": True},
+        ]
+    ) == ["docs", "docs > api", "docs > api > v2"]

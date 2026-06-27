@@ -17,3 +17,15 @@ def test_active_member_ids_accepts_aliases_tokens_and_sorts_unique_ids():
             {"id": " ", "status": "active"},
         ]
     ) == ["a1", "b2", "c3", "z9"]
+
+
+def test_duplicate_member_ids_use_source_priority_before_timestamp_and_status():
+    assert active_member_ids(
+        [
+            {"id": "u1", "status": "active", "source": "import", "updated_at": 40},
+            {"member_id": " u1 ", "status": "enabled", "source": "manual", "updated_at": 1},
+            {"user_id": "u2", "status": "inactive", "source": "directory", "updated_at": 6},
+            {"member": {"id": "u2"}, "status": "yes", "source": "directory", "updated_at": 7},
+            {"id": "u3", "status": True},
+        ]
+    ) == ["u1", "u2", "u3"]

@@ -28,3 +28,33 @@ def test_duplicate_members_use_source_priority_before_timestamp():
             {"id": "c", "status": "yes"},
         ]
     ) == ["b", "c"]
+
+
+def test_duplicate_members_break_same_source_timestamp_ties_by_later_input():
+    assert active_member_ids(
+        [
+            {"id": "d", "status": "disabled", "source": "directory", "updated_at": 8},
+            {"member_id": "d", "status": "enabled", "source": "directory", "updated_at": 8},
+            {"user_id": "e", "status": "yes", "source": "other", "updated_at": 100},
+            {"member": {"id": "e"}, "status": "inactive", "source": "directory", "updated_at": 1},
+        ]
+    ) == ["d"]
+
+
+def test_integer_one_status_token_is_active():
+    assert active_member_ids(
+        [
+            {"id": "one", "status": 1},
+            {"id": "zero", "status": 0},
+        ]
+    ) == ["one"]
+
+
+def test_malformed_member_rows_are_skipped():
+    assert active_member_ids(
+        [
+            None,
+            "not-a-member-row",
+            {"id": "valid", "status": "active"},
+        ]
+    ) == ["valid"]

@@ -34,3 +34,27 @@ def test_expense_revisions_are_selected_before_totals():
         ]
     )
     assert list(result.items()) == [("p2", 5), ("p1", 1.25)]
+
+
+def test_revision_ties_use_later_input_before_rejection_filtering():
+    result = totals_by_project(
+        [
+            {"expense_id": "r1", "project_id": "alpha", "amount": "2", "updated_at": 7, "status": "rejected"},
+            {"expense_id": "r1", "project_id": "alpha", "amount": "6", "updated_at": 7},
+            {"expense_id": "r2", "project_id": "beta", "amount": "9", "updated_at": 4},
+            {"expense_id": "r2", "project_id": "beta", "amount": "11", "updated_at": 5, "status": "void"},
+            {"project": {"id": "beta"}, "amount": "1"},
+        ]
+    )
+    assert list(result.items()) == [("alpha", 6), ("beta", 1)]
+
+
+def test_blank_expense_ids_do_not_collapse_unrelated_rows():
+    result = totals_by_project(
+        [
+            {"expense_id": "", "project_id": "alpha", "amount": "2"},
+            {"expense_id": " ", "project_id": "beta", "amount": "3"},
+            {"project_id": "alpha", "amount": "4"},
+        ]
+    )
+    assert list(result.items()) == [("alpha", 6), ("beta", 3)]

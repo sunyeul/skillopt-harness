@@ -49,3 +49,14 @@ def test_duplicate_ids_use_updated_at_for_owner_and_email_fields():
         {"id": 7, "owner": "New Owner", "email": "new@example.com", "enabled": True},
         {"id": 8, "owner": "No Timestamp", "email": "nt@example.com", "enabled": False},
     ]
+
+
+def test_rows_without_account_ids_are_ignored_before_sorting():
+    assert normalize_accounts(
+        [
+            {"owner": "ghost", "email": "ghost@example.com", "enabled": True},
+            {"id": 9, "owner": " real owner ", "email": "REAL@EXAMPLE.COM"},
+        ]
+    ) == [
+        {"id": 9, "owner": "Real Owner", "email": "real@example.com", "enabled": False},
+    ]
