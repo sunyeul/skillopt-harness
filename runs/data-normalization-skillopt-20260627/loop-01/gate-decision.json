@@ -1,0 +1,24 @@
+{
+  "baseline_test_records": "runs/data-normalization-skillopt-20260627/loop-01/baseline-test-reporting-only.jsonl",
+  "baseline_test_score": 0.6,
+  "best_score": 0.8,
+  "best_selection_records": null,
+  "best_skill_output": "runs/data-normalization-skillopt-20260627/best-skill.md",
+  "candidate_score": 1.0,
+  "candidate_selection_records": "runs/data-normalization-skillopt-20260627/loop-01/candidate-selection.jsonl",
+  "candidate_test_records": "runs/data-normalization-skillopt-20260627/loop-01/candidate-test-reporting-only.jsonl",
+  "candidate_test_score": 0.6,
+  "contamination_reason": null,
+  "current_skill_output": "runs/data-normalization-skillopt-20260627/current-best.md",
+  "decision": "accept_new_best",
+  "leakage_status": "clean",
+  "parent_score": 0.8,
+  "parent_selection_records": "runs/data-normalization-skillopt-20260627/loop-01/parent-selection.jsonl",
+  "reject_reason": null,
+  "rollout_isolation": "independent",
+  "steps": [
+    "gate"
+  ],
+  "test_delta": 0.0,
+  "timestamp": "20260627T170321Z"
+}

@@ -1,0 +1,43 @@
+{
+  "aggregated_edits": "runs/data-normalization-skillopt-20260627/loop-01/aggregated-edits.json",
+  "baseline_test_records": "runs/data-normalization-skillopt-20260627/loop-01/baseline-test-reporting-only.jsonl",
+  "baseline_test_score": 0.6,
+  "best_score": 0.8,
+  "best_skill": "runs/data-normalization-skillopt-20260627/best-skill.md",
+  "candidate_score": 1.0,
+  "candidate_skill": "runs/data-normalization-skillopt-20260627/loop-01/candidate-skill.md",
+  "candidate_test_records": "runs/data-normalization-skillopt-20260627/loop-01/candidate-test-reporting-only.jsonl",
+  "candidate_test_score": 0.6,
+  "contamination_reason": null,
+  "current_best": "runs/data-normalization-skillopt-20260627/current-best.md",
+  "decision": "accept_new_best",
+  "edit_budget": 2,
+  "experiment_dir": "runs/data-normalization-skillopt-20260627",
+  "gate_decision": "runs/data-normalization-skillopt-20260627/loop-01/gate-decision.json",
+  "initial_baseline": "runs/data-normalization-skillopt-20260627/initial-baseline.md",
+  "leakage_status": "clean",
+  "loop_dir": "runs/data-normalization-skillopt-20260627/loop-01",
+  "loop_id": "loop-01",
+  "parent_score": 0.8,
+  "parent_skill": "runs/data-normalization-skillopt-20260627/loop-01/parent-skill.md",
+  "reflected_edits": "runs/data-normalization-skillopt-20260627/loop-01/reflected-edits.json",
+  "reject_reason": null,
+  "rollout_isolation": "independent",
+  "rollout_records": [
+    "runs/data-normalization-skillopt-20260627/loop-01/rollouts/train-rollouts.jsonl"
+  ],
+  "selected_edits": "runs/data-normalization-skillopt-20260627/loop-01/selected-edits.json",
+  "steps": [
+    "baseline",
+    "rollout",
+    "reflect",
+    "aggregate",
+    "select",
+    "update",
+    "gate"
+  ],
+  "test_delta": 0.0,
+  "timestamp": "20260627T170321Z",
+  "track": "data_normalization",
+  "update_report": "runs/data-normalization-skillopt-20260627/loop-01/update-report.json"
+}
