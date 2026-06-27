@@ -155,6 +155,7 @@ dependencies:
 
 - `.codex/skills/code-repair/SKILL.md`
 - `.codex/skills/data-normalization/SKILL.md`
+- `.codex/skills/failure-to-fixture/SKILL.md`
 - `.codex/skills/skillopt-loop/SKILL.md`
 - `.codex/subagents/skill-loop-auditor.md`
 
@@ -165,6 +166,34 @@ Reusable weak baselines for MVP loop-validation experiments live in:
 
 These assets are useful for running experiments, but the harness should remain
 manual: it must not call Codex or any optimizer model.
+
+## Post-MVP Extensions
+
+The MVP intentionally keeps the core loop narrow: list, prepare, grade, record
+artifacts, and gate candidate skill text. Operational extensions should preserve
+that boundary instead of turning the harness into an optimizer or an agent
+runner.
+
+`failure-to-fixture` is the first such extension. It curates failed rollouts,
+repair attempts, verifier cases, or production observations into proposed
+fixtures for a future dataset version. It is fixture maintenance, not an active
+loop step.
+
+The extension follows these rules:
+
+- Stage proposed cases outside active fixture splits, for example under
+  `proposed_fixtures/<track>/<case-id>/`.
+- Minimize each case, record provenance, and resolve the track from
+  `skillopt.yaml`.
+- Do not inspect hidden tests directly; use hidden behavior only through
+  recorded or redacted `grade-task` output.
+- Do not use a failure-derived fixture to accept, reject, tune, or re-rank the
+  candidate that discovered the failure.
+- Promote a proposed fixture only after review, and only for a later experiment
+  or dataset version.
+
+This keeps failed-case learning useful without letting future fixtures leak
+back into the evidence used for the current gate.
 
 ## Minimal Workflow Reference
 

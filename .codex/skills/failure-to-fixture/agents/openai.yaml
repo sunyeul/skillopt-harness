@@ -1,0 +1,4 @@
+interface:
+  display_name: "Failure to Fixture"
+  short_description: "Curate failed cases into reviewable SkillOpt fixtures."
+  default_prompt: "Convert a failed SkillOpt case into a proposed fixture without contaminating active experiments."
