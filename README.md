@@ -1,5 +1,7 @@
 # SkillOpt MVP Harness
 
+Languages: English | [한국어](README.ko.md) | [日本語](README.ja.md)
+
 This repository is a minimal, manual harness for validating SkillOpt-style
 skill improvement loops. It is not an optimizer, and it does not call Codex.
 Its job is to make the experimental boundary boring and inspectable: prepare
