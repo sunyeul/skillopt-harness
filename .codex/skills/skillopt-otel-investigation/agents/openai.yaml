@@ -1,0 +1,4 @@
+interface:
+  display_name: "SkillOpt OTEL Investigation"
+  short_description: "Trace SkillOpt loops and verify artifacts."
+  default_prompt: "Use $skillopt-otel-investigation to explain a SkillOpt loop decision or grading failure from local traces and artifacts."
