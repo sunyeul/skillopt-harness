@@ -82,6 +82,21 @@ tasks:
       - task: lint
       - task: test
 
+  otel-ui:
+    desc: Run a local Jaeger UI for OpenTelemetry traces
+    cmds:
+      - docker compose -f otel/docker-compose.yaml up
+
+  otel-ui-detached:
+    desc: Run a local Jaeger UI for OpenTelemetry traces in the background
+    cmds:
+      - docker compose -f otel/docker-compose.yaml up -d
+
+  otel-ui-down:
+    desc: Stop the local Jaeger UI
+    cmds:
+      - docker compose -f otel/docker-compose.yaml down
+
   help:
     desc: Show SkillOpt harness CLI help
     cmds:

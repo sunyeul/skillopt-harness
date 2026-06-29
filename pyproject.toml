@@ -5,6 +5,13 @@ description = "Manual code-repair workspace and grading harness."
 requires-python = ">=3.12"
 dependencies = []
 
+[project.optional-dependencies]
+otel = [
+    "opentelemetry-api",
+    "opentelemetry-exporter-otlp",
+    "opentelemetry-sdk",
+]
+
 [project.scripts]
 skillopt-harness = "skillopt_harness.cli:main"
 

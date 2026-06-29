@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Iterable, Literal
 
 from .state import ensure_dir, read_jsonl, utc_timestamp, write_json
+from .telemetry import set_attributes, start_span
 
 EditOperation = Literal["add", "delete", "replace"]
 EditPosition = Literal["before", "after", "end"]
@@ -243,76 +244,102 @@ def run_full_loop(
     contamination_reason: str | None = None,
     rollout_isolation: RolloutIsolation = "unknown",
 ) -> dict[str, Any]:
-    ensure_dir(experiment_dir)
     loop_dir = experiment_dir / loop_id
-    initial_baseline = experiment_dir / "initial-baseline.md"
-    current_best = experiment_dir / "current-best.md"
-    best_skill = experiment_dir / "best-skill.md"
+    with start_span(
+        "skillopt.loop_run",
+        {
+            "skillopt.command": "loop-run",
+            "skillopt.track": track,
+            "skillopt.loop_id": loop_id,
+            "skillopt.experiment_dir": experiment_dir,
+            "skillopt.loop_dir": loop_dir,
+            "skillopt.edit_budget": edit_budget,
+            "skillopt.rollout_record_count": len(rollout_records),
+            "skillopt.rollout_isolation": rollout_isolation,
+            "skillopt.contaminated": contaminated,
+        },
+    ) as span:
+        ensure_dir(experiment_dir)
+        initial_baseline = experiment_dir / "initial-baseline.md"
+        current_best = experiment_dir / "current-best.md"
+        best_skill = experiment_dir / "best-skill.md"
 
-    if not initial_baseline.exists():
-        shutil.copy2(initial_skill, initial_baseline)
-    if not current_best.exists():
-        shutil.copy2(initial_baseline, current_best)
-    if not best_skill.exists():
-        shutil.copy2(current_best, best_skill)
+        if not initial_baseline.exists():
+            shutil.copy2(initial_skill, initial_baseline)
+        if not current_best.exists():
+            shutil.copy2(initial_baseline, current_best)
+        if not best_skill.exists():
+            shutil.copy2(current_best, best_skill)
 
-    proposal = _run_loop_proposal(
-        loop_dir=loop_dir,
-        track=track,
-        parent_skill=current_best,
-        edit_proposals=edit_proposals,
-        edit_budget=edit_budget,
-        rollout_records=rollout_records,
-    )
-    gate = _run_loop_gate(
-        loop_dir=loop_dir,
-        parent_selection_records=parent_selection_records,
-        candidate_selection_records=candidate_selection_records,
-        best_selection_records=best_selection_records,
-        baseline_test_records=baseline_test_records,
-        candidate_test_records=candidate_test_records,
-        current_skill_output=current_best,
-        best_skill_output=best_skill,
-        contaminated=contaminated,
-        contamination_reason=contamination_reason,
-        rollout_isolation=rollout_isolation,
-    )
+        proposal = _run_loop_proposal(
+            loop_dir=loop_dir,
+            track=track,
+            parent_skill=current_best,
+            edit_proposals=edit_proposals,
+            edit_budget=edit_budget,
+            rollout_records=rollout_records,
+        )
+        gate = _run_loop_gate(
+            loop_dir=loop_dir,
+            parent_selection_records=parent_selection_records,
+            candidate_selection_records=candidate_selection_records,
+            best_selection_records=best_selection_records,
+            baseline_test_records=baseline_test_records,
+            candidate_test_records=candidate_test_records,
+            current_skill_output=current_best,
+            best_skill_output=best_skill,
+            contaminated=contaminated,
+            contamination_reason=contamination_reason,
+            rollout_isolation=rollout_isolation,
+        )
+        set_attributes(
+            span,
+            {
+                "skillopt.decision": gate["decision"],
+                "skillopt.parent_score": gate["parent_score"],
+                "skillopt.candidate_score": gate["candidate_score"],
+                "skillopt.best_score": gate["best_score"],
+                "skillopt.score_delta": gate["candidate_score"] - gate["parent_score"],
+                "skillopt.leakage_status": gate["leakage_status"],
+                "skillopt.reject_reason": gate["reject_reason"],
+            },
+        )
 
-    manifest = {
-        "timestamp": utc_timestamp(),
-        "track": track,
-        "loop_id": loop_id,
-        "steps": ["baseline", "rollout", "reflect", "aggregate", "select", "update", "gate"],
-        "experiment_dir": str(experiment_dir),
-        "loop_dir": str(loop_dir),
-        "initial_baseline": str(initial_baseline),
-        "current_best": str(current_best),
-        "best_skill": str(best_skill),
-        "parent_skill": proposal["parent_skill"],
-        "candidate_skill": proposal["candidate_skill"],
-        "rollout_records": proposal["rollout_records"],
-        "reflected_edits": proposal["reflected_edits"],
-        "aggregated_edits": proposal["aggregated_edits"],
-        "selected_edits": proposal["selected_edits"],
-        "edit_budget": edit_budget,
-        "update_report": proposal["update_report"],
-        "gate_decision": str(loop_dir / "gate-decision.json"),
-        "decision": gate["decision"],
-        "parent_score": gate["parent_score"],
-        "candidate_score": gate["candidate_score"],
-        "best_score": gate["best_score"],
-        "baseline_test_score": gate["baseline_test_score"],
-        "candidate_test_score": gate["candidate_test_score"],
-        "test_delta": gate["test_delta"],
-        "baseline_test_records": gate["baseline_test_records"],
-        "candidate_test_records": gate["candidate_test_records"],
-        "leakage_status": gate["leakage_status"],
-        "contamination_reason": gate["contamination_reason"],
-        "reject_reason": gate["reject_reason"],
-        "rollout_isolation": gate["rollout_isolation"],
-    }
-    write_json(loop_dir / "full-loop-manifest.json", manifest)
-    return manifest
+        manifest = {
+            "timestamp": utc_timestamp(),
+            "track": track,
+            "loop_id": loop_id,
+            "steps": ["baseline", "rollout", "reflect", "aggregate", "select", "update", "gate"],
+            "experiment_dir": str(experiment_dir),
+            "loop_dir": str(loop_dir),
+            "initial_baseline": str(initial_baseline),
+            "current_best": str(current_best),
+            "best_skill": str(best_skill),
+            "parent_skill": proposal["parent_skill"],
+            "candidate_skill": proposal["candidate_skill"],
+            "rollout_records": proposal["rollout_records"],
+            "reflected_edits": proposal["reflected_edits"],
+            "aggregated_edits": proposal["aggregated_edits"],
+            "selected_edits": proposal["selected_edits"],
+            "edit_budget": edit_budget,
+            "update_report": proposal["update_report"],
+            "gate_decision": str(loop_dir / "gate-decision.json"),
+            "decision": gate["decision"],
+            "parent_score": gate["parent_score"],
+            "candidate_score": gate["candidate_score"],
+            "best_score": gate["best_score"],
+            "baseline_test_score": gate["baseline_test_score"],
+            "candidate_test_score": gate["candidate_test_score"],
+            "test_delta": gate["test_delta"],
+            "baseline_test_records": gate["baseline_test_records"],
+            "candidate_test_records": gate["candidate_test_records"],
+            "leakage_status": gate["leakage_status"],
+            "contamination_reason": gate["contamination_reason"],
+            "reject_reason": gate["reject_reason"],
+            "rollout_isolation": gate["rollout_isolation"],
+        }
+        write_json(loop_dir / "full-loop-manifest.json", manifest)
+        return manifest
 
 
 def run_epoch_series(
@@ -383,64 +410,133 @@ def _run_loop_proposal(
     edit_budget: int,
     rollout_records: list[Path],
 ) -> dict[str, Any]:
-    ensure_dir(loop_dir)
-    copied_rollouts = _copy_artifacts(rollout_records, loop_dir / "rollouts")
-    parent_copy = loop_dir / "parent-skill.md"
-    reflected_copy = loop_dir / "reflected-edits.json"
     candidate_path = loop_dir / "candidate-skill.md"
     update_report_path = loop_dir / "update-report.json"
+    with start_span(
+        "skillopt.proposal",
+        {
+            "skillopt.track": track,
+            "skillopt.edit_budget": edit_budget,
+            "skillopt.rollout_record_count": len(rollout_records),
+            "skillopt.candidate_skill_path": candidate_path,
+            "skillopt.update_report_path": update_report_path,
+        },
+    ) as proposal_span:
+        ensure_dir(loop_dir)
+        copied_rollouts = _copy_artifacts(rollout_records, loop_dir / "rollouts")
+        parent_copy = loop_dir / "parent-skill.md"
+        reflected_copy = loop_dir / "reflected-edits.json"
 
-    shutil.copy2(parent_skill, parent_copy)
-    shutil.copy2(edit_proposals, reflected_copy)
+        shutil.copy2(parent_skill, parent_copy)
+        shutil.copy2(edit_proposals, reflected_copy)
 
-    proposals = load_edit_proposals(edit_proposals)
-    aggregated = aggregate_edits(proposals)
-    selected = select_edits(aggregated, edit_budget)
-    parent_text = parent_skill.read_text()
-    validation_errors = _validate_selected_edits(parent_text, selected)
-
-    write_json(loop_dir / "aggregated-edits.json", {"edits": _edits_to_dicts(aggregated)})
-    write_json(loop_dir / "selected-edits.json", {"edits": _edits_to_dicts(selected)})
-    if validation_errors:
-        update_report = {
-            "timestamp": utc_timestamp(),
-            "applied": [],
-            "validation_errors": [item.to_dict() for item in validation_errors],
-            "failed_count": len(validation_errors),
-        }
-        write_json(update_report_path, update_report)
-        first_error = validation_errors[0].message
-        raise ValueError(
-            f"Failed to validate {len(validation_errors)} selected edit(s): {first_error}"
+        proposals = load_edit_proposals(edit_proposals)
+        with start_span(
+            "skillopt.aggregate_edits",
+            {"skillopt.proposed_edit_count": len(proposals)},
+        ) as aggregate_span:
+            aggregated = aggregate_edits(proposals)
+            set_attributes(
+                aggregate_span,
+                {"skillopt.aggregated_edit_count": len(aggregated)},
+            )
+        set_attributes(
+            proposal_span,
+            {
+                "skillopt.proposed_edit_count": len(proposals),
+                "skillopt.aggregated_edit_count": len(aggregated),
+            },
         )
 
-    candidate_text, applied = apply_edits(parent_text, selected)
-    candidate_path.write_text(candidate_text)
-    update_report = {
-        "timestamp": utc_timestamp(),
-        "applied": [item.to_dict() for item in applied],
-        "validation_errors": [],
-        "failed_count": sum(1 for item in applied if item.status == "failed"),
-    }
-    write_json(update_report_path, update_report)
+        with start_span(
+            "skillopt.select_edits",
+            {
+                "skillopt.edit_budget": edit_budget,
+                "skillopt.aggregated_edit_count": len(aggregated),
+            },
+        ) as select_span:
+            selected = select_edits(aggregated, edit_budget)
+            set_attributes(select_span, {"skillopt.selected_edit_count": len(selected)})
+        set_attributes(proposal_span, {"skillopt.selected_edit_count": len(selected)})
 
-    manifest = {
-        "timestamp": utc_timestamp(),
-        "track": track,
-        "steps": ["rollout", "reflect", "aggregate", "select", "update"],
-        "parent_skill": str(parent_copy),
-        "rollout_records": [str(path) for path in copied_rollouts],
-        "reflected_edits": str(reflected_copy),
-        "aggregated_edits": str(loop_dir / "aggregated-edits.json"),
-        "selected_edits": str(loop_dir / "selected-edits.json"),
-        "candidate_skill": str(candidate_path),
-        "edit_budget": edit_budget,
-        "update_report": str(update_report_path),
-    }
-    write_json(loop_dir / "manifest.json", manifest)
-    if update_report["failed_count"]:
-        raise ValueError(f"Failed to apply {update_report['failed_count']} selected edit(s)")
-    return manifest
+        parent_text = parent_skill.read_text()
+        write_json(loop_dir / "aggregated-edits.json", {"edits": _edits_to_dicts(aggregated)})
+        write_json(loop_dir / "selected-edits.json", {"edits": _edits_to_dicts(selected)})
+        with start_span(
+            "skillopt.apply_edits",
+            {"skillopt.selected_edit_count": len(selected)},
+        ) as apply_span:
+            validation_errors = _validate_selected_edits(parent_text, selected)
+            if validation_errors:
+                update_report = {
+                    "timestamp": utc_timestamp(),
+                    "applied": [],
+                    "validation_errors": [item.to_dict() for item in validation_errors],
+                    "failed_count": len(validation_errors),
+                }
+                write_json(update_report_path, update_report)
+                set_attributes(
+                    apply_span,
+                    {
+                        "skillopt.applied_edit_count": 0,
+                        "skillopt.failed_edit_count": len(validation_errors),
+                    },
+                )
+                set_attributes(
+                    proposal_span,
+                    {
+                        "skillopt.applied_edit_count": 0,
+                        "skillopt.failed_edit_count": len(validation_errors),
+                    },
+                )
+                first_error = validation_errors[0].message
+                raise ValueError(
+                    f"Failed to validate {len(validation_errors)} selected edit(s): {first_error}"
+                )
+
+            candidate_text, applied = apply_edits(parent_text, selected)
+            candidate_path.write_text(candidate_text)
+            failed_count = sum(1 for item in applied if item.status == "failed")
+            update_report = {
+                "timestamp": utc_timestamp(),
+                "applied": [item.to_dict() for item in applied],
+                "validation_errors": [],
+                "failed_count": failed_count,
+            }
+            write_json(update_report_path, update_report)
+            applied_count = sum(1 for item in applied if item.status == "applied")
+            set_attributes(
+                apply_span,
+                {
+                    "skillopt.applied_edit_count": applied_count,
+                    "skillopt.failed_edit_count": failed_count,
+                },
+            )
+            set_attributes(
+                proposal_span,
+                {
+                    "skillopt.applied_edit_count": applied_count,
+                    "skillopt.failed_edit_count": failed_count,
+                },
+            )
+
+        manifest = {
+            "timestamp": utc_timestamp(),
+            "track": track,
+            "steps": ["rollout", "reflect", "aggregate", "select", "update"],
+            "parent_skill": str(parent_copy),
+            "rollout_records": [str(path) for path in copied_rollouts],
+            "reflected_edits": str(reflected_copy),
+            "aggregated_edits": str(loop_dir / "aggregated-edits.json"),
+            "selected_edits": str(loop_dir / "selected-edits.json"),
+            "candidate_skill": str(candidate_path),
+            "edit_budget": edit_budget,
+            "update_report": str(update_report_path),
+        }
+        write_json(loop_dir / "manifest.json", manifest)
+        if update_report["failed_count"]:
+            raise ValueError(f"Failed to apply {update_report['failed_count']} selected edit(s)")
+        return manifest
 
 
 def _run_loop_gate(
@@ -457,79 +553,154 @@ def _run_loop_gate(
     contamination_reason: str | None = None,
     rollout_isolation: RolloutIsolation = "unknown",
 ) -> dict[str, Any]:
-    ensure_dir(loop_dir)
-    if contaminated and not contamination_reason:
-        raise ValueError("--contamination-reason is required when --contaminated is set")
-    parent_records_copy = loop_dir / "parent-selection.jsonl"
-    candidate_records_copy = loop_dir / "candidate-selection.jsonl"
-    parent_records_copy = _copy_artifact(parent_selection_records, parent_records_copy)
-    candidate_records_copy = _copy_artifact(candidate_selection_records, candidate_records_copy)
-
-    parent_task_ids = _selection_task_ids(parent_selection_records)
-    candidate_task_ids = _selection_task_ids(candidate_selection_records)
-    if parent_task_ids != candidate_task_ids:
-        raise ValueError(
-            "Parent and candidate selection tasks differ: "
-            f"parent={parent_task_ids}, candidate={candidate_task_ids}"
+    with start_span(
+        "skillopt.gate",
+        {
+            "skillopt.rollout_isolation": rollout_isolation,
+            "skillopt.contaminated": contaminated,
+            "skillopt.leakage_status": "contaminated" if contaminated else "clean",
+        },
+    ) as gate_span:
+        ensure_dir(loop_dir)
+        if contaminated and not contamination_reason:
+            raise ValueError("--contamination-reason is required when --contaminated is set")
+        parent_records_copy = loop_dir / "parent-selection.jsonl"
+        candidate_records_copy = loop_dir / "candidate-selection.jsonl"
+        parent_records_copy = _copy_artifact(parent_selection_records, parent_records_copy)
+        candidate_records_copy = _copy_artifact(
+            candidate_selection_records, candidate_records_copy
         )
 
-    parent_score = _selection_score(parent_selection_records)
-    candidate_score = _selection_score(candidate_selection_records)
-    best_score = (
-        _selection_score(best_selection_records)
-        if best_selection_records is not None
-        else parent_score
-    )
-    test_comparison = _test_comparison(
-        loop_dir=loop_dir,
-        baseline_test_records=baseline_test_records,
-        candidate_test_records=candidate_test_records,
-    )
-    decision = gate_candidate(
-        parent_score,
-        candidate_score,
-        best_score,
-        contaminated=contaminated,
-        rollout_isolation=rollout_isolation,
-    )
+        parent_task_ids = _selection_task_ids(parent_selection_records)
+        candidate_task_ids = _selection_task_ids(candidate_selection_records)
+        if parent_task_ids != candidate_task_ids:
+            raise ValueError(
+                "Parent and candidate selection tasks differ: "
+                f"parent={parent_task_ids}, candidate={candidate_task_ids}"
+            )
 
-    candidate_skill = loop_dir / "candidate-skill.md"
-    if decision in {"accept", "accept_new_best"} and current_skill_output is not None:
-        _copy_if_exists(candidate_skill, current_skill_output)
-    if decision == "accept_new_best" and best_skill_output is not None:
-        _copy_if_exists(candidate_skill, best_skill_output)
+        with start_span(
+            "skillopt.score_parent",
+            {
+                "skillopt.record_path": parent_selection_records,
+                "skillopt.selection_task_count": len(parent_task_ids),
+            },
+        ) as parent_span:
+            parent_score = _selection_score(parent_selection_records)
+            parent_summary = _record_summary(parent_selection_records)
+            set_attributes(
+                parent_span,
+                {
+                    "skillopt.score": parent_score,
+                    "skillopt.passed_count": parent_summary["passed_count"],
+                    "skillopt.failed_count": parent_summary["failed_count"],
+                },
+            )
 
-    record = {
-        "timestamp": utc_timestamp(),
-        "steps": ["gate"],
-        "decision": decision,
-        "parent_score": parent_score,
-        "candidate_score": candidate_score,
-        "best_score": best_score,
-        **test_comparison,
-        "leakage_status": "contaminated" if contaminated else "clean",
-        "contamination_reason": contamination_reason if contaminated else None,
-        "rollout_isolation": rollout_isolation,
-        "reject_reason": _reject_reason(
-            decision=decision,
-            parent_score=parent_score,
-            candidate_score=candidate_score,
-            contaminated=contaminated,
-            rollout_isolation=rollout_isolation,
-        ),
-        "parent_selection_records": str(parent_records_copy),
-        "candidate_selection_records": str(candidate_records_copy),
-        "best_selection_records": str(best_selection_records)
-        if best_selection_records is not None
-        else None,
-        "current_skill_output": str(current_skill_output)
-        if current_skill_output is not None
-        else None,
-        "best_skill_output": str(best_skill_output) if best_skill_output is not None else None,
-    }
-    write_json(loop_dir / "gate-decision.json", record)
-    (loop_dir / "decision.md").write_text(_decision_markdown(record))
-    return record
+        with start_span(
+            "skillopt.score_candidate",
+            {
+                "skillopt.record_path": candidate_selection_records,
+                "skillopt.selection_task_count": len(candidate_task_ids),
+            },
+        ) as candidate_span:
+            candidate_score = _selection_score(candidate_selection_records)
+            candidate_summary = _record_summary(candidate_selection_records)
+            set_attributes(
+                candidate_span,
+                {
+                    "skillopt.score": candidate_score,
+                    "skillopt.passed_count": candidate_summary["passed_count"],
+                    "skillopt.failed_count": candidate_summary["failed_count"],
+                },
+            )
+
+        best_score = (
+            _selection_score(best_selection_records)
+            if best_selection_records is not None
+            else parent_score
+        )
+        test_comparison = _test_comparison(
+            loop_dir=loop_dir,
+            baseline_test_records=baseline_test_records,
+            candidate_test_records=candidate_test_records,
+        )
+        with start_span(
+            "skillopt.decide",
+            {
+                "skillopt.parent_score": parent_score,
+                "skillopt.candidate_score": candidate_score,
+                "skillopt.best_score": best_score,
+                "skillopt.score_delta": candidate_score - parent_score,
+                "skillopt.rollout_isolation": rollout_isolation,
+                "skillopt.leakage_status": "contaminated" if contaminated else "clean",
+            },
+        ) as decide_span:
+            decision = gate_candidate(
+                parent_score,
+                candidate_score,
+                best_score,
+                contaminated=contaminated,
+                rollout_isolation=rollout_isolation,
+            )
+            reject_reason = _reject_reason(
+                decision=decision,
+                parent_score=parent_score,
+                candidate_score=candidate_score,
+                contaminated=contaminated,
+                rollout_isolation=rollout_isolation,
+            )
+            set_attributes(
+                decide_span,
+                {
+                    "skillopt.decision": decision,
+                    "skillopt.reject_reason": reject_reason,
+                },
+            )
+
+        candidate_skill = loop_dir / "candidate-skill.md"
+        if decision in {"accept", "accept_new_best"} and current_skill_output is not None:
+            _copy_if_exists(candidate_skill, current_skill_output)
+        if decision == "accept_new_best" and best_skill_output is not None:
+            _copy_if_exists(candidate_skill, best_skill_output)
+
+        record = {
+            "timestamp": utc_timestamp(),
+            "steps": ["gate"],
+            "decision": decision,
+            "parent_score": parent_score,
+            "candidate_score": candidate_score,
+            "best_score": best_score,
+            **test_comparison,
+            "leakage_status": "contaminated" if contaminated else "clean",
+            "contamination_reason": contamination_reason if contaminated else None,
+            "rollout_isolation": rollout_isolation,
+            "reject_reason": reject_reason,
+            "parent_selection_records": str(parent_records_copy),
+            "candidate_selection_records": str(candidate_records_copy),
+            "best_selection_records": str(best_selection_records)
+            if best_selection_records is not None
+            else None,
+            "current_skill_output": str(current_skill_output)
+            if current_skill_output is not None
+            else None,
+            "best_skill_output": str(best_skill_output) if best_skill_output is not None else None,
+        }
+        set_attributes(
+            gate_span,
+            {
+                "skillopt.decision": decision,
+                "skillopt.parent_score": parent_score,
+                "skillopt.candidate_score": candidate_score,
+                "skillopt.best_score": best_score,
+                "skillopt.score_delta": candidate_score - parent_score,
+                "skillopt.leakage_status": record["leakage_status"],
+                "skillopt.reject_reason": reject_reason,
+            },
+        )
+        write_json(loop_dir / "gate-decision.json", record)
+        (loop_dir / "decision.md").write_text(_decision_markdown(record))
+        return record
 
 
 def _parse_epoch_input(data: Any, index: int) -> EpochInput:
@@ -626,6 +797,19 @@ def _record_score(path: Path, label: str) -> float:
             raise ValueError(f"{label} record {index} is missing score: {path}")
         scores.append(float(record["score"]))
     return sum(scores) / len(scores)
+
+
+def _record_summary(path: Path) -> dict[str, int | float]:
+    records = read_jsonl(path)
+    scores = [float(record["score"]) for record in records if "score" in record]
+    passed_count = sum(1 for score in scores if score >= 1.0)
+    failed_count = len(scores) - passed_count
+    return {
+        "task_count": len(records),
+        "passed_count": passed_count,
+        "failed_count": failed_count,
+        "score": sum(scores) / len(scores) if scores else 0.0,
+    }
 
 
 def _test_comparison(

@@ -11,6 +11,7 @@ from .config import HarnessConfig, TrackConfig, load_config
 from .evaluator import copy_task_to_workspace, run_workspace_verifier
 from .skill_loop import abort_loop, load_epoch_inputs, run_epoch_series, run_full_loop
 from .state import TaskMetadata, append_jsonl, ensure_dir, load_tasks, utc_timestamp, write_json
+from .telemetry import configure_telemetry, set_attributes, start_span
 
 TASK_META_FILENAME = ".skillopt-task.json"
 
@@ -84,6 +85,7 @@ def main(argv: list[str] | None = None) -> int:
     subparsers.add_parser("init-fixtures")
 
     args = parser.parse_args(argv)
+    configure_telemetry()
     config = load_config(Path(args.config))
     if args.command == "list-tasks":
         return _list_tasks(config.track(args.track), args.split)
@@ -155,28 +157,49 @@ def _grade_task(
     output: Path | None,
     redact_output: bool,
 ) -> int:
-    if not workspace.is_dir():
-        print(f"Workspace does not exist: {workspace}", file=sys.stderr)
-        return 1
-    if not track.evaluator_command:
-        print("No evaluator_command configured.", file=sys.stderr)
-        return 1
+    with start_span(
+        "skillopt.grade_task",
+        {
+            "skillopt.command": "grade-task",
+            "skillopt.track": track.name,
+            "skillopt.workspace": workspace,
+            "skillopt.output_present": output is not None,
+            "skillopt.redact_output": redact_output,
+        },
+    ) as span:
+        if not workspace.is_dir():
+            print(f"Workspace does not exist: {workspace}", file=sys.stderr)
+            return 1
+        if not track.evaluator_command:
+            print("No evaluator_command configured.", file=sys.stderr)
+            return 1
 
-    verifier_result = run_workspace_verifier(
-        workspace, track.evaluator_command, config.timeout_seconds
-    )
-    record = {
-        "timestamp": utc_timestamp(),
-        "task": _read_workspace_task(workspace),
-        "verifier": verifier_result.to_dict(),
-        "score": verifier_result.score,
-    }
-    if output is not None:
-        append_jsonl(output, record)
-    if redact_output:
-        record = _redacted_grade_record(record)
-    print(json.dumps(record, indent=2, sort_keys=True))
-    return 0 if verifier_result.returncode == 0 else 1
+        verifier_result = run_workspace_verifier(
+            workspace, track.evaluator_command, config.timeout_seconds
+        )
+        task = _read_workspace_task(workspace)
+        set_attributes(
+            span,
+            {
+                "skillopt.task_id": task.get("id"),
+                "skillopt.task_split": task.get("split"),
+                "skillopt.score": verifier_result.score,
+                "skillopt.verifier_returncode": verifier_result.returncode,
+                "skillopt.verifier_timed_out": verifier_result.timed_out,
+            },
+        )
+        record = {
+            "timestamp": utc_timestamp(),
+            "task": task,
+            "verifier": verifier_result.to_dict(),
+            "score": verifier_result.score,
+        }
+        if output is not None:
+            append_jsonl(output, record)
+        if redact_output:
+            record = _redacted_grade_record(record)
+        print(json.dumps(record, indent=2, sort_keys=True))
+        return 0 if verifier_result.returncode == 0 else 1
 
 
 def _init_fixtures(config: HarnessConfig) -> int:
